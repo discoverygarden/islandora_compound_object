@@ -1,0 +1,9 @@
+name: 'Islandora compound object'
+description: 'An object type and related tools for compound objects.'
+dependencies:
+  - :islandora
+package: 'Islandora Solution Packs'
+configure: compound_object.admin
+core: 8.x
+type: module
+php: '5.5.9'
