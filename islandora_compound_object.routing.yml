@@ -1,5 +1,5 @@
 islandora_compound_object.admin:
-  path: '/admin/config/islandora/solution_pack_config/basic_image'
+  path: '/admin/config/islandora/solution_pack_config/compound_object'
   defaults:
     _title: 'Compound Object Solution Pack'
     _form: '\Drupal\islandora_compound_object\Form\Admin'
