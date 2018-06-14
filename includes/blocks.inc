@@ -13,7 +13,7 @@
  */
 function islandora_compound_object_jail_display_block() {
   $block = array();
-  $object = menu_get_object('islandora_object', 2);
+  $object = \Drupal::routeMatch()->getParameter('islandora_object', 2);
   if ($object) {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     if (!empty($compound_info)) {
@@ -46,7 +46,7 @@ function islandora_compound_object_jail_display_block() {
         '#markup' => t('Part of: @label (@count @obj)', array(
           '@label' => $compound_info['parent_label'],
           '@count' => $compound_info['child_count'],
-          '@obj' => format_plural($compound_info['child_count'], 'object', 'objects'),
+          '@obj' => \Drupal::translation()->formatPlural($compound_info['child_count'], 'object', 'objects'),
         )),
       );
       if ($compound_info['parent_url']) {
@@ -56,7 +56,7 @@ function islandora_compound_object_jail_display_block() {
         );
       }
 
-      $query_params = drupal_get_query_parameters();
+      $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters();
       foreach ($compound_info['siblings_detailed'] as $sibling) {
         $path = 'islandora/object/' . $sibling['pid'] . '/datastream/TN/view';
         $class = array(
@@ -93,7 +93,7 @@ function islandora_compound_object_jail_display_block() {
           ),
           'content' => array(
             '#theme' => 'link',
-            '#text' => drupal_render($img),
+            '#text' => \Drupal::service("renderer")->render($img),
             '#path' => "islandora/object/{$sibling['pid']}",
             '#options' => array(
               'attributes' => array(),
@@ -120,7 +120,7 @@ function islandora_compound_object_jail_display_block() {
 function islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   drupal_add_css(drupal_get_path('module', 'islandora_compound_object') . '/css/islandora_compound_object.block.css');
-  $object = $object ? $object : menu_get_object('islandora_object', 2);
+  $object = $object ? $object : \Drupal::routeMatch()->getParameter('islandora_object', 2);
   if ($object) {
     $output = '';
     if ($object) {

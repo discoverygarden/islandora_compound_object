@@ -23,7 +23,7 @@
 ?>
  <div class="islandora-compound-prev-next">
  <span class="islandora-compound-title"><?php
-  print t('Part of: @parent (@count @objects)', array('@parent' => $parent_label, '@count' => $child_count, '@objects' => format_plural($child_count, 'object', 'objects'))); ?>
+  print t('Part of: @parent (@count @objects)', array('@parent' => $parent_label, '@count' => $child_count, '@objects' => \Drupal::translation()->formatPlural($child_count, 'object', 'objects'))); ?>
  <?php if ($parent_url): ?>
     <?php print l(t('manage parent'), $parent_url); ?>
  <?php endif; ?>
@@ -54,7 +54,7 @@
  <?php endif; ?>
 
  <?php if (count($themed_siblings) > 0): ?>
-   <?php $query_params = drupal_get_query_parameters(); ?>
+   <?php $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters(); ?>
    <div class="islandora-compound-thumbs">
    <?php foreach ($themed_siblings as $sibling): ?>
      <div class="islandora-compound-thumb">

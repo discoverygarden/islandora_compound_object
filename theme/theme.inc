@@ -72,14 +72,14 @@ function theme_islandora_compound_object_draggable_table(array $variables) {
   $rows = array();
   $weight_class = 'islandora-page-weight';
   $table = &$form['table'];
-  foreach (element_children($table['rows']) as $id) {
+  foreach (\Drupal\Core\Render\Element::children($table['rows']) as $id) {
     $row = &$table['rows'][$id];
     $row['weight']['#attributes'] = array('class' => array($weight_class));
     $rows[] = array(
       'data' => array(
-        drupal_render($row['label']),
-        drupal_render($row['pid']),
-        drupal_render($row['weight']),
+        \Drupal::service("renderer")->render($row['label']),
+        \Drupal::service("renderer")->render($row['pid']),
+        \Drupal::service("renderer")->render($row['weight']),
       ),
       'class' => array('draggable'),
     );

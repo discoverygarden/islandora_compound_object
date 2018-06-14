@@ -9,7 +9,7 @@
  * Implements callback_islandora_compound_object_query_backends().
  */
 function islandora_compound_object_legacy_query_sparql($pid) {
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
   $objects = array();
 
   $connection = islandora_get_tuque_connection();
@@ -67,11 +67,11 @@ EOQ;
 function islandora_compound_object_query_sparql($pid) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
   $objects = array();
 
   // Handle XACML restrictions in query.
-  global $user;
+  $user = \Drupal::currentUser();
   if ($user->uid === 0) {
     $user_name = 'anonymous';
   }
@@ -86,7 +86,12 @@ function islandora_compound_object_query_sparql($pid) {
   $role_matcher = implode(' || ', $role_matches);
 
   // Handle namespace restrictions in query.
-  $enforced = variable_get('islandora_namespace_restriction_enforced', FALSE);
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// $enforced = variable_get('islandora_namespace_restriction_enforced', FALSE);
+
   $namespace_filter = '';
   if ($enforced) {
     $namespace_array = islandora_get_allowed_namespaces();

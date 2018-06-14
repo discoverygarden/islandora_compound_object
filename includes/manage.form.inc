@@ -11,7 +11,7 @@
  * Menu callback for manage form.
  */
 function islandora_compound_object_manage(FedoraObject $object) {
-  return drupal_get_form('islandora_compound_object_manage_form', $object);
+  return \Drupal::formBuilder()->getForm('islandora_compound_object_manage_form', $object);
 }
 
 /**
@@ -20,10 +20,10 @@ function islandora_compound_object_manage(FedoraObject $object) {
 function islandora_compound_object_manage_form($form, &$form_state, $object) {
   $form = array();
   $form_state['object'] = $object;
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
 
   // Add child objects.
-  if ((variable_get('islandora_compound_object_compound_children', TRUE) && in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) || !variable_get('islandora_compound_object_compound_children', TRUE)) {
+  if ((\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children') && in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) || !\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
     $form['add_children'] = array(
       '#type' => 'fieldset',
       '#title' => t('Add Child Objects'),
@@ -121,11 +121,11 @@ function islandora_compound_object_manage_form($form, &$form_state, $object) {
 function islandora_compound_object_manage_form_validate($form, &$form_state) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $object = $form_state['values']['object'];
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
 
   // Child.
   if (!empty($form_state['values']['child'])) {
-    if (variable_get('islandora_compound_object_compound_children', TRUE)) {
+    if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
       $compound = FALSE;
       foreach ($object->models as $value) {
         if ($value == ISLANDORA_COMPOUND_OBJECT_CMODEL) {
@@ -166,7 +166,7 @@ function islandora_compound_object_manage_form_validate($form, &$form_state) {
       form_set_error('parent', t('Invalid object supplied.'));
     }
     else {
-      if (variable_get('islandora_compound_object_compound_children', TRUE)) {
+      if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
         if (!in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $parent_object->models)) {
           form_set_error('parent', t('The parent object (@pid) is not a compound object!', array('@pid' => $form_state['values']['parent'])));
         }
@@ -196,8 +196,8 @@ function islandora_compound_object_manage_form_validate($form, &$form_state) {
  */
 function islandora_compound_object_manage_form_submit($form, &$form_state) {
   $object = $form_state['values']['object'];
-  $create_thumbs = variable_get('islandora_compound_object_thumbnail_child', TRUE);
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $create_thumbs = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
   // Relationship from child to this object.
   if (!empty($form_state['values']['child'])) {
     $child_object = islandora_object_load($form_state['values']['child']);
@@ -255,8 +255,8 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
   $map = function($child) use($delta, &$seq) {
     $seq++;
     return array(
-      'label' => array('#markup' => check_plain($child['title'])),
-      'pid' => array('#markup' => check_plain($child['pid'])),
+      'label' => array('#markup' => \Drupal\Component\Utility\Html::escape($child['title'])),
+      'pid' => array('#markup' => \Drupal\Component\Utility\Html::escape($child['pid'])),
       'weight' => array(
         '#type' => 'weight',
         '#title' => t('Weight'),
@@ -337,7 +337,7 @@ function islandora_compound_object_sequence_batch($pid, array $compounds) {
  *   The parent pid.
  */
 function islandora_compound_object_change_thumbnail($parent) {
-  $create_thumbs = variable_get('islandora_compound_object_thumbnail_child', TRUE);
+  $create_thumbs = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
   if ($create_thumbs) {
     islandora_compound_object_update_parent_thumbnail(islandora_object_load($parent));
   }
@@ -431,7 +431,7 @@ function islandora_compound_object_get_insert_sequence_number($children) {
 function islandora_compound_object_add_parent($objects, $parent_pids) {
   $objects = $objects instanceof AbstractObject ? array($objects) : $objects;
   $parent_pids = (array) $parent_pids;
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
 
   foreach ($parent_pids as $parent_pid) {
     $escaped_pid = str_replace(':', '_', $parent_pid);
@@ -447,7 +447,7 @@ function islandora_compound_object_add_parent($objects, $parent_pids) {
     }
   }
 
-  module_invoke_all('islandora_compound_object_children_added_to_parent', $objects, $parent_pids);
+  \Drupal::moduleHandler()->invokeAll('islandora_compound_object_children_added_to_parent', [$objects, $parent_pids]);
 }
 
 /**
@@ -462,7 +462,7 @@ function islandora_compound_object_add_parent($objects, $parent_pids) {
 function islandora_compound_object_remove_parent($objects, $parent_pids) {
   $objects = $objects instanceof AbstractObject ? array($objects) : $objects;
   $parent_pids = (array) $parent_pids;
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
 
   foreach ($parent_pids as $parent_pid) {
     $escaped_pid = str_replace(':', '_', $parent_pid);
@@ -473,5 +473,5 @@ function islandora_compound_object_remove_parent($objects, $parent_pids) {
     }
   }
 
-  module_invoke_all('islandora_compound_object_children_removed_from_parent', $objects, $parent_pids);
+  \Drupal::moduleHandler()->invokeAll('islandora_compound_object_children_removed_from_parent', [$objects, $parent_pids]);
 }

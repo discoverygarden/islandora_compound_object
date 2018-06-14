@@ -12,7 +12,7 @@
  */
 function islandora_compound_object_admin_form($form, &$form_state) {
 
-  $backend_options = module_invoke_all('islandora_compound_object_query_backends');
+  $backend_options = \Drupal::moduleHandler()->invokeAll('islandora_compound_object_query_backends');
   $map_to_title = function ($backend) {
     return $backend['title'];
   };
@@ -23,35 +23,35 @@ function islandora_compound_object_admin_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Only allow compound objects to have child objects associated with them'),
     '#description' => t('If unchecked, all objects may have child objects.'),
-    '#default_value' => variable_get('islandora_compound_object_compound_children', TRUE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children'),
   );
 
   $form['islandora_compound_object_thumbnail_child'] = array(
     '#type' => 'checkbox',
     '#title' => t('Generate a thumbnail for compound objects from their first child'),
     '#description' => t('If checked, the thumbnail for a compound object will be generated from its first child object.'),
-    '#default_value' => variable_get('islandora_compound_object_thumbnail_child', TRUE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child'),
   );
 
   $form['islandora_compound_object_hide_child_objects_ri'] = array(
     '#type' => 'checkbox',
     '#title' => t('Hide child objects in RI results'),
     '#description' => t('If checked, child objects will be hidden. Only visible within the compound context.'),
-    '#default_value' => variable_get('islandora_compound_object_hide_child_objects_ri', TRUE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_hide_child_objects_ri'),
   );
 
   $form['islandora_compound_object_hide_child_objects_solr'] = array(
     '#type' => 'checkbox',
     '#title' => t('Hide child objects in Solr results'),
     '#description' => t('If checked, child objects will be hidden. Only visible within the compound context.'),
-    '#default_value' => variable_get('islandora_compound_object_hide_child_objects_solr', TRUE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_hide_child_objects_solr'),
   );
 
   $form['islandora_compound_object_solr_fq'] = array(
     '#type' => 'textfield',
     '#title' => t('Solr filter query'),
     '#description' => t('Filter compound object children from Solr results.'),
-    '#default_value' => variable_get('islandora_compound_object_solr_fq', '-RELS_EXT_isConstituentOf_uri_mt:[* TO *]'),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_solr_fq'),
     '#element_validate' => array('islandora_compound_object_solr_fq_validate'),
     '#states' => array(
       'visible' => array(
@@ -67,7 +67,7 @@ function islandora_compound_object_admin_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Child relationship predicate'),
     '#description' => t('Changing this after objects have been created will break functionality. Should be part of info:fedora/fedora-system:def/relations-external#'),
-    '#default_value' => variable_get('islandora_compound_object_relationship', 'isConstituentOf'),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship'),
     '#required' => TRUE,
   );
 
@@ -77,7 +77,7 @@ function islandora_compound_object_admin_form($form, &$form_state) {
     '#description' => t('<b>Requires</b> <a href="@url">JAIL</a> library to be present.', array(
       '@url' => url('https://github.com/sebarmeli/JAIL', array('absolute' => TRUE)),
     )),
-    '#default_value' => variable_get('islandora_compound_object_use_jail_view', FALSE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view'),
     '#element_validate' => array('islandora_compound_object_admin_form_jail_validation'),
   );
 
@@ -85,29 +85,33 @@ function islandora_compound_object_admin_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Use derivative hooks for parent thumbnail updates?'),
     '#description' => t('Changes to the TN datastream of a compounds first child will be reflected on the parent.'),
-    '#default_value' => variable_get('islandora_compound_object_tn_deriv_hooks', FALSE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_tn_deriv_hooks'),
   );
 
   $form['islandora_compound_object_show_compound_parents_in_breadcrumbs'] = array(
     '#type' => 'checkbox',
     '#title' => t('Display compound object parents in the breadcrumbs on children objects.'),
-    '#default_value' => variable_get('islandora_compound_object_show_compound_parents_in_breadcrumbs', FALSE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_show_compound_parents_in_breadcrumbs'),
   );
 
   $form['islandora_compound_object_redirect_to_first'] = array(
     '#type' => 'checkbox',
     '#title' => t('Redirect to first child when a compound object is requested.'),
     '#description' => t('Users will be redirected to the first child of a Compound Object when enabling this setting.'),
-    '#default_value' => variable_get('islandora_compound_object_redirect_to_first', FALSE),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_redirect_to_first'),
     '#element_validate' => array('islandora_compound_object_admin_form_redirect_to_first_validation'),
   );
 
-  $form['islandora_compound_object_query_backend'] = array(
+  // @FIXME
+// Could not extract the default value because it is either indeterminate, or
+// not scalar. You'll need to provide a default value in
+// config/install/islandora_compound_object.settings.yml and config/schema/islandora_compound_object.schema.yml.
+$form['islandora_compound_object_query_backend'] = array(
     '#type' => 'radios',
     '#title' => t('Compound Member Query'),
     '#description' => t('Select the method that will be used to find the children of the compound objects.'),
     '#options' => array_map($map_to_title, $backend_options),
-    '#default_value' => variable_get('islandora_compound_object_query_backend', ISLANDORA_COMPOUND_OBJECT_LEGACY_BACKEND),
+    '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_query_backend'),
   );
 
   return system_settings_form($form);
