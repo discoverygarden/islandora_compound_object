@@ -25,32 +25,44 @@
  <span class="islandora-compound-title"><?php
   print t('Part of: @parent (@count @objects)', array('@parent' => $parent_label, '@count' => $child_count, '@objects' => \Drupal::translation()->formatPlural($child_count, 'object', 'objects'))); ?>
  <?php if ($parent_url): ?>
-    <?php print l(t('manage parent'), $parent_url); ?>
+    <?php // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// print l(t('manage parent'), $parent_url);
+ ?>
  <?php endif; ?>
    <?php if ($parent_tn): ?>
-    <?php print l(
-       theme_image(
-         array(
-           'path' => $parent_tn,
-           'attributes' => array(
-             'alt' => $parent_label,
-           ),
-         )
-       ),
-       'islandora/object/' . $parent_pid,
-       array('html' => TRUE)
-     ); ?>
+    <?php // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// print l(
+//        theme_image(
+//          array(
+//            'path' => $parent_tn,
+//            'attributes' => array(
+//              'alt' => $parent_label,
+//            ),
+//          )
+//        ),
+//        'islandora/object/' . $parent_pid,
+//        array('html' => TRUE)
+//      );
+ ?>
  <?php endif; ?>
  </span><br/>
 
  <?php if (!empty($previous_pid)): ?>
-   <?php print l(t('Previous'), 'islandora/object/' . $previous_pid); ?>
+   <?php // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// print l(t('Previous'), 'islandora/object/' . $previous_pid);
+ ?>
  <?php endif; ?>
  <?php if (!empty($previous_pid) && !empty($next_pid)): ?>
     |
  <?php endif;?>
  <?php if (!empty($next_pid)): ?>
-   <?php print l(t('Next'), 'islandora/object/' . $next_pid); ?>
+   <?php // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// print l(t('Next'), 'islandora/object/' . $next_pid);
+ ?>
  <?php endif; ?>
 
  <?php if (count($themed_siblings) > 0): ?>
@@ -59,26 +71,29 @@
    <?php foreach ($themed_siblings as $sibling): ?>
      <div class="islandora-compound-thumb">
      <span class='islandora-compound-caption'><?php print $sibling['label'];?></span>
-     <?php print l(
-       theme_image(
-         array(
-           'path' => $sibling['TN'],
-           'attributes' => array(
-             'class' => $sibling['class'],
-             'title' => $sibling['label'],
-             'alt' => $sibling['label'],
-           ),
-         )
-       ),
-       'islandora/object/' . $sibling['pid'],
-       array(
-         'html' => TRUE,
-         'query' => $query_params,
-         'attributes' => array(
-           'title' => $sibling['label'],
-         )
-       )
-     );?>
+     <?php // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// print l(
+//        theme_image(
+//          array(
+//            'path' => $sibling['TN'],
+//            'attributes' => array(
+//              'class' => $sibling['class'],
+//              'title' => $sibling['label'],
+//              'alt' => $sibling['label'],
+//            ),
+//          )
+//        ),
+//        'islandora/object/' . $sibling['pid'],
+//        array(
+//          'html' => TRUE,
+//          'query' => $query_params,
+//          'attributes' => array(
+//            'title' => $sibling['label'],
+//          )
+//        )
+//      );
+?>
      </div>
    <?php endforeach; // each themed_siblings ?>
    </div> <!-- // islandora-compound-thumbs -->

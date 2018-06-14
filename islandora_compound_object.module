@@ -263,7 +263,14 @@ function islandora_compound_object_islandora_compoundCModel_islandora_view_objec
       else {
         // Get view of first child.
         $first_child = islandora_object_load($first_child_id);
-        drupal_set_title($first_child->label);
+        // @FIXME
+// drupal_set_title() has been removed. There are now a few ways to set the title
+// dynamically, depending on the situation.
+// 
+// 
+// @see https://www.drupal.org/node/2067859
+// drupal_set_title($first_child->label);
+
         return islandora_view_object($first_child);
       }
     }
@@ -413,7 +420,7 @@ function islandora_compound_object_autocomplete($string, $parent = FALSE) {
   $escape_meta = function ($meta) {
     return "\\\\$meta";
   };
-  $meta_replacements = drupal_map_assoc($meta, $escape_meta);
+  $meta_replacements = array_combine($meta, $escape_meta, $meta);
 
   $replacements = array(
     '!compound_model' => '?model',
@@ -574,14 +581,28 @@ function islandora_compound_object_menu_local_tasks_alter(&$data, $router_item, 
       if ($compound_info) {
         if ($compound_object->id == $compound_info['parent_pid']) {
           // We are the parent so don't repeat the label twice.
-          drupal_set_title($compound_info['parent_label']);
+          // @FIXME
+// drupal_set_title() has been removed. There are now a few ways to set the title
+// dynamically, depending on the situation.
+// 
+// 
+// @see https://www.drupal.org/node/2067859
+// drupal_set_title($compound_info['parent_label']);
+
         }
         else {
           // Display both the parent and child label.
-          drupal_set_title(t('@parent - @child', array(
-            '@parent' => $compound_info['parent_label'],
-            '@child' => $compound_info['label'],
-          )), PASS_THROUGH);
+          // @FIXME
+// drupal_set_title() has been removed. There are now a few ways to set the title
+// dynamically, depending on the situation.
+// 
+// 
+// @see https://www.drupal.org/node/2067859
+// drupal_set_title(t('@parent - @child', array(
+//             '@parent' => $compound_info['parent_label'],
+//             '@child' => $compound_info['label'],
+//           )), PASS_THROUGH);
+
         }
       }
       if (isset($data['tabs'][0]['output'])) {

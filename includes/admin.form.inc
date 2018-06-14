@@ -75,7 +75,7 @@ function islandora_compound_object_admin_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Use alternative, autoloading display for compounds?'),
     '#description' => t('<b>Requires</b> <a href="@url">JAIL</a> library to be present.', array(
-      '@url' => url('https://github.com/sebarmeli/JAIL', array('absolute' => TRUE)),
+      '@url' => \Drupal\Core\Url::fromUri('https://github.com/sebarmeli/JAIL'),
     )),
     '#default_value' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view'),
     '#element_validate' => array('islandora_compound_object_admin_form_jail_validation'),
@@ -130,9 +130,9 @@ $form['islandora_compound_object_query_backend'] = array(
 function islandora_compound_object_admin_form_jail_validation(array $element, array &$form_state, array $form) {
   if ($element['#value'] == 1 && !libraries_get_path('JAIL')) {
     $element['#value'] = 0;
-    form_set_value($element, $element['#value'], $form_state);
+    $form_state->setValueForElement($element, $element['#value']);
     drupal_set_message(t('The <a href="@url">JAIL</a> library must be present in the libraries folder to use this display.', array(
-      '@url' => url('https://github.com/sebarmeli/JAIL', array('absolute' => TRUE)),
+      '@url' => \Drupal\Core\Url::fromUri('https://github.com/sebarmeli/JAIL'),
     )), 'error');
   }
 }

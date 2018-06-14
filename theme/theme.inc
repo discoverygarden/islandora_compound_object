@@ -11,7 +11,15 @@
  * Theme function for the compound navigation block parts.
  */
 function template_preprocess_islandora_compound_prev_next(array &$variables) {
-  drupal_add_js(drupal_get_path('module', 'islandora_compound_object') . '/js/caption_width.js');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_js(drupal_get_path('module', 'islandora_compound_object') . '/js/caption_width.js');
+
 
   $themed_siblings = array();
   $image_path = drupal_get_path('module', 'islandora');
@@ -85,11 +93,27 @@ function theme_islandora_compound_object_draggable_table(array $variables) {
     );
   }
   $table_id = 'islandora-reorder-objects-table';
-  $output = theme('table', array(
-              'header' => $table['#header'],
-              'rows' => $rows,
-              'attributes' => array('id' => $table_id)));
+  // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $output = theme('table', array(
+//               'header' => $table['#header'],
+//               'rows' => $rows,
+//               'attributes' => array('id' => $table_id)));
+
   $output .= drupal_render_children($form);
-  drupal_add_tabledrag($table_id, 'order', 'sibling', $weight_class);
+  // @FIXME
+// TableDrag is now attached with the #tabledrag property of certain render
+// arrays. drupal_add_tabledrag() is now internal and should never be called directly.
+// 
+// 
+// @see https://www.drupal.org/node/2160571
+// drupal_add_tabledrag($table_id, 'order', 'sibling', $weight_class);
+
   return $output;
 }

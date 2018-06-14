@@ -30,14 +30,17 @@ function islandora_compound_object_jail_display_block() {
           'group' => JS_LIBRARY,
         ),
       );
-      $block['#attached']['js'][] = array(
-        'data' => array(
-          'islandora_compound_object' => array(
-            'image_path' => url(drupal_get_path('module', 'islandora') . '/images/folder.png'),
-          ),
-        ),
-        'type' => 'setting',
-      );
+      // @FIXME
+// url() expects a route name or an external URI.
+// $block['#attached']['js'][] = array(
+//         'data' => array(
+//           'islandora_compound_object' => array(
+//             'image_path' => url(drupal_get_path('module', 'islandora') . '/images/folder.png'),
+//           ),
+//         ),
+//         'type' => 'setting',
+//       );
+
       $block['#attached']['css'] = array(
         "$module_path/css/islandora_compound_object.jail_block.css",
       );
@@ -50,10 +53,13 @@ function islandora_compound_object_jail_display_block() {
         )),
       );
       if ($compound_info['parent_url']) {
-        $block['manage_link'] = array(
-          '#type' => 'item',
-          '#markup' => l(t('manage parent'), $compound_info['parent_url']),
-        );
+        // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $block['manage_link'] = array(
+//           '#type' => 'item',
+//           '#markup' => l(t('manage parent'), $compound_info['parent_url']),
+//         );
+
       }
 
       $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters();
@@ -65,23 +71,26 @@ function islandora_compound_object_jail_display_block() {
         if ($sibling['pid'] == $compound_info['current_pid']) {
           $class[] = 'islandora-compound-object-jail-active';
         }
-        $img = array(
-          'image' => array(
-            '#theme' => 'image',
-            '#path' => "$module_path/images/loader.png",
-            '#attributes' => array(
-              'class' => $class,
-              'data-src' => url($path),
-            ),
-            '#href' => "islandora/object/{$sibling['pid']}",
-          ),
-          'noscript' => array(
-            '#theme' => 'image',
-            '#path' => $path,
-            '#prefix' => '<noscript>',
-            '#suffix' => '</noscript>',
-          ),
-        );
+        // @FIXME
+// url() expects a route name or an external URI.
+// $img = array(
+//           'image' => array(
+//             '#theme' => 'image',
+//             '#path' => "$module_path/images/loader.png",
+//             '#attributes' => array(
+//               'class' => $class,
+//               'data-src' => url($path),
+//             ),
+//             '#href' => "islandora/object/{$sibling['pid']}",
+//           ),
+//           'noscript' => array(
+//             '#theme' => 'image',
+//             '#path' => $path,
+//             '#prefix' => '<noscript>',
+//             '#suffix' => '</noscript>',
+//           ),
+//         );
+
         $block[$sibling['pid']] = array(
           '#type' => 'container',
           '#attributes' => array(),
@@ -119,7 +128,15 @@ function islandora_compound_object_jail_display_block() {
  */
 function islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_add_css(drupal_get_path('module', 'islandora_compound_object') . '/css/islandora_compound_object.block.css');
+  // @FIXME
+// The Assets API has totally changed. CSS, JavaScript, and libraries are now
+// attached directly to render arrays using the #attached property.
+// 
+// 
+// @see https://www.drupal.org/node/2169605
+// @see https://www.drupal.org/node/2408597
+// drupal_add_css(drupal_get_path('module', 'islandora_compound_object') . '/css/islandora_compound_object.block.css');
+
   $object = $object ? $object : \Drupal::routeMatch()->getParameter('islandora_object', 2);
   if ($object) {
     $output = '';
@@ -127,7 +144,16 @@ function islandora_compound_object_navigation_block(AbstractObject $object = NUL
       $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
       // This object is part of a compound object.
       if (!empty($compound_info)) {
-        $prev_next = theme('islandora_compound_prev_next', $compound_info);
+        // @FIXME
+// theme() has been renamed to _theme() and should NEVER be called directly.
+// Calling _theme() directly can alter the expected output and potentially
+// introduce security issues (see https://www.drupal.org/node/2195739). You
+// should use renderable arrays instead.
+// 
+// 
+// @see https://www.drupal.org/node/2195739
+// $prev_next = theme('islandora_compound_prev_next', $compound_info);
+
         $output .= $prev_next;
       }
 

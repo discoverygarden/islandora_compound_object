@@ -172,6 +172,6 @@ function islandora_compound_object_get_insert_sequence($children) {
  */
 function islandora_compound_object_batch_update_rels_predicate_finished($success, $results, $operations) {
   // Print finished message to user.
-  variable_set('islandora_compound_object_relationship', 'isConstituentOf');
+  \Drupal::configFactory()->getEditable('islandora_compound_object.settings')->set('islandora_compound_object_relationship', 'isConstituentOf')->save();
   drush_print('Finished updating compound object relationship predicate(s).');
 }
