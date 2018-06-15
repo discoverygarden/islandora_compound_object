@@ -13,68 +13,6 @@ define('ISLANDORA_COMPOUND_OBJECT_CMODEL', 'islandora:compoundCModel');
 const ISLANDORA_COMPOUND_OBJECT_LEGACY_BACKEND = 'islandora_compound_object_legacy_sparql';
 
 /**
- * Implements hook_menu().
- */
-function islandora_compound_object_menu() {
-  $items = array();
-  $items['admin/islandora/solution_pack_config/compound_object'] = array(
-    'title' => 'Compound Object Solution Pack',
-    'description' => 'Customize behavior.',
-    'access arguments' => array('administer compound relationships'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('islandora_compound_object_admin_form'),
-    'file' => 'includes/admin.form.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['islandora/object/%islandora_object/manage/compound'] = array(
-    'title' => 'Compound',
-    'page callback' => 'islandora_compound_object_manage',
-    'page arguments' => array(2),
-    'access callback' => 'islandora_compound_object_access',
-    'access arguments' => array(2),
-    'file' => 'includes/manage.form.inc',
-    'type' => MENU_LOCAL_TASK,
-  );
-  $items['islandora_compound_object/autocomplete/child'] = array(
-    'page callback' => 'islandora_compound_object_autocomplete',
-    'page arguments' => array(3, FALSE),
-    'access arguments' => array('administer compound relationships'),
-    'type' => MENU_CALLBACK,
-  );
-  $items['islandora_compound_object/autocomplete/parent'] = array(
-    'page callback' => 'islandora_compound_object_autocomplete',
-    'page arguments' => array(3, TRUE),
-    'access arguments' => array('administer compound relationships'),
-    'type' => MENU_CALLBACK,
-  );
-  $items['islandora/object/%islandora_object/compound_count'] = array(
-    'title' => 'Compound Object Count',
-    'weight' => 23,
-    'page callback' => TRUE,
-    'type' => MENU_LOCAL_TASK,
-    'access callback' => 'islandora_compound_object_task_access',
-    'access arguments' => array(2),
-  );
-  $items['islandora/object/%islandora_object/compound_previous'] = array(
-    'title' => 'Compound Previous',
-    'weight' => 22,
-    'page callback' => TRUE,
-    'type' => MENU_LOCAL_TASK,
-    'access callback' => 'islandora_compound_object_task_access',
-    'access arguments' => array(2),
-  );
-  $items['islandora/object/%islandora_object/compound_next'] = array(
-    'title' => 'Compound Next',
-    'weight' => 21,
-    'page callback' => TRUE,
-    'type' => MENU_LOCAL_TASK,
-    'access callback' => 'islandora_compound_object_task_access',
-    'access arguments' => array(2),
-  );
-  return $items;
-}
-
-/**
  * Implements hook_permission().
  */
 function islandora_compound_object_permission() {
