@@ -68,7 +68,7 @@ WHERE {
 }
 LIMIT 10
 EOQ;
-    $query = format_string($query, $replacements);
+    $query = strtr($query, $replacements);
     $results = $islandora_tuque->repository->ri->sparqlQuery($query, 'unlimited');
 
     foreach ($results as $result) {

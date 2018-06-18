@@ -379,7 +379,7 @@ WHERE {
 }
 LIMIT 10
 EOQ;
-  $query = format_string($query, $replacements);
+  $query = strtr($query, $replacements);
   $results = $islandora_tuque->repository->ri->sparqlQuery($query, 'unlimited');
 
   foreach ($results as $result) {
@@ -397,7 +397,7 @@ EOQ;
 function islandora_compound_object_islandora_basic_collection_get_query_optionals($type) {
   if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_hide_child_objects_ri')) {
     if ($type == 'view') {
-      return format_string('?object <!uri!pred> ?compound', array(
+      return strtr('?object <!uri!pred> ?compound', array(
         '!uri' => FEDORA_RELS_EXT_URI,
         '!pred' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship'),
       ));
@@ -433,11 +433,7 @@ function islandora_compound_object_islandora_solr_query($islandora_solr_query) {
  */
 function islandora_compound_object_get_parts($pid, $ret_title = FALSE) {
 
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/islandora_compound_object.settings.yml and config/schema/islandora_compound_object.schema.yml.
-$backend = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_query_backend');
+  $backend = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_query_backend');
   $backends = \Drupal::moduleHandler()->invokeAll('islandora_compound_object_query_backends');
 
   if (!isset($backends[$backend])) {
@@ -706,7 +702,7 @@ function islandora_compound_object_islandora_compound_object_management_control_
 function islandora_compound_object_islandora_get_breadcrumb_query_predicates(AbstractObject $object) {
   if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_show_compound_parents_in_breadcrumbs')) {
     return array(
-      format_string('fedora-rels-ext:!compound_rels', array('!compound_rels' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship'))),
+      strtr('fedora-rels-ext:!compound_rels', array('!compound_rels' => \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship'))),
     );
   }
 }

@@ -54,7 +54,7 @@ WHERE {
 }
 ORDER BY ?label
 EOQ;
-  $query = format_string($query, array(
+  $query = strtr($query, array(
     '!model' => ISLANDORA_COMPOUND_OBJECT_CMODEL,
   ));
 

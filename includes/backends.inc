@@ -86,17 +86,13 @@ function islandora_compound_object_query_sparql($pid) {
   $role_matcher = implode(' || ', $role_matches);
 
   // Handle namespace restrictions in query.
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $enforced = variable_get('islandora_namespace_restriction_enforced', FALSE);
+  $enforced = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
 
   $namespace_filter = '';
   if ($enforced) {
     $namespace_array = islandora_get_allowed_namespaces();
     $namespace_sparql = implode('|', $namespace_array);
-    $namespace_filter = format_string('FILTER(regex(str(?object), "info:fedora/(!namespaces):"))', array('!namespaces' => $namespace_sparql));
+    $namespace_filter = strtr('FILTER(regex(str(?object), "info:fedora/(!namespaces):"))', array('!namespaces' => $namespace_sparql));
   }
 
   $escaped_pid = str_replace(':', '_', $pid);
