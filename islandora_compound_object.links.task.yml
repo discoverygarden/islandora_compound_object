@@ -1,4 +1,4 @@
 islandora_compound_object.manage:
   route_name: islandora_compound_object.manage
   title: Compound
-  base_route: islandora.manage_overview_object
+  parent_id: islandora.manage_overview_object
