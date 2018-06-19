@@ -8,10 +8,10 @@ islandora_compound_object.admin:
 islandora_compound_object.manage:
   path: '/islandora/object/{object}/manage/compound'
   defaults:
+    perms: 'administer compound relationships'
     _title: 'Compound'
     _form: '\Drupal\islandora_compound_object\Form\Manage'
   requirements:
-    _permission: 'administer compound relationships'
     _islandora_object_access: 'TRUE'
   options:
     _admin_route: TRUE

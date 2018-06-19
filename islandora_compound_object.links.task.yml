@@ -1,5 +1,4 @@
 islandora_compound_object.manage:
   route_name: islandora_compound_object.manage
-  title: 'Compound'
-  weight: -5
+  title: Compound
   base_route: islandora.manage_overview_object
