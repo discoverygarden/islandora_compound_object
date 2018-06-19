@@ -34,12 +34,12 @@ class Manage extends FormBase {
     if ((\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children') && in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) || !\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
       $form['add_children'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Add Child Objects'),
-        '#description' => t('Add child objects as part of this compound object'),
+        '#title' => $this->t('Add Child Objects'),
+        '#description' => $this->t('Add child objects as part of this compound object'),
       );
       $form['add_children']['child'] = array(
         '#type' => 'textfield',
-        '#title' => t('Child Object Pid/Label'),
+        '#title' => $this->t('Child Object Pid/Label'),
         '#autocomplete_path' => 'islandora_compound_object/autocomplete/child',
       );
 
@@ -48,22 +48,22 @@ class Manage extends FormBase {
       if (!empty($children)) {
         $form['children'] = array(
           '#type' => 'fieldset',
-          '#title' => t('Remove Child Objects'),
-          '#description' => t('Remove child objects of as part of this compound object'),
+          '#title' => $this->t('Remove Child Objects'),
+          '#description' => $this->t('Remove child objects of as part of this compound object'),
           '#collapsed' => TRUE,
           '#collapsible' => TRUE,
         );
 
-        $header = array('title' => t('Title'), 'pid' => t('Object ID'));
+        $header = array('title' => $this->t('Title'), 'pid' => $this->t('Object ID'));
         $form['children']['remove_children'] = array(
           '#type' => 'tableselect',
-          '#title' => t('Children'),
+          '#title' => $this->t('Children'),
           '#header' => $header,
           '#options' => $children,
         );
         $form['reorder_fieldset'] = array(
           '#type' => 'fieldset',
-          '#title' => t('Reorder'),
+          '#title' => $this->t('Reorder'),
           '#collapsed' => TRUE,
           '#collapsible' => TRUE,
         );
@@ -75,12 +75,12 @@ class Manage extends FormBase {
     // Add parents.
     $form['add_to_parent'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Associate with Parent Object'),
-      '#description' => t('Add this object to a parent object'),
+      '#title' => $this->t('Associate with Parent Object'),
+      '#description' => $this->t('Add this object to a parent object'),
     );
     $form['add_to_parent']['parent'] = array(
       '#type' => 'textfield',
-      '#title' => t('Parent Object Pid/Label'),
+      '#title' => $this->t('Parent Object Pid/Label'),
       '#autocomplete_path' => 'islandora_compound_object/autocomplete/parent',
     );
 
@@ -89,8 +89,8 @@ class Manage extends FormBase {
     if (!empty($parent_part_of)) {
       $form['parents'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Unlink From Parent'),
-        '#description' => t('Remove the relationship between this object and parent objects.'),
+        '#title' => $this->t('Unlink From Parent'),
+        '#description' => $this->t('Remove the relationship between this object and parent objects.'),
       );
 
       $parents = array();
@@ -104,8 +104,8 @@ class Manage extends FormBase {
 
       $form['parents']['unlink_parents'] = array(
         '#type' => 'tableselect',
-        '#title' => t('Parents'),
-        '#header' => array('title' => t('Title'), 'pid' => t('Object ID')),
+        '#title' => $this->t('Parents'),
+        '#header' => array('title' => $this->t('Title'), 'pid' => $this->t('Object ID')),
         '#options' => $parents,
       );
     }
@@ -117,7 +117,7 @@ class Manage extends FormBase {
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Save'),
+      '#value' => $this->t('Save'),
     );
 
     return $form;
