@@ -12,9 +12,21 @@ islandora_compound_object.manage:
     _title: 'Compound'
     _form: '\Drupal\islandora_compound_object\Form\Manage'
   requirements:
-    _islandora_object_access: 'TRUE'
+    _islandora_object_access: 'true'
   options:
     _admin_route: TRUE
     parameters:
       object:
         type: object
+islandora_compound_object.autocomplete:
+  path: '/islandora/object/{object}/manage/compound/autocomplete'
+  defaults:
+    perms: 'administer compound relationships'
+    _controller: '\Drupal\islandora_compound_object\Controller\DefaultController::autocomplete'
+  options:
+    _admin_route: true
+    parameters:
+      object:
+        type: object
+  requirements:
+    _islandora_object_access: 'true'

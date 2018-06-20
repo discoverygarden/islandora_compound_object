@@ -40,7 +40,8 @@ class Manage extends FormBase {
       $form['add_children']['child'] = array(
         '#type' => 'textfield',
         '#title' => $this->t('Child Object Pid/Label'),
-        '#autocomplete_path' => 'islandora_compound_object/autocomplete/child',
+        '#autocomplete_route_name' => 'islandora_compound_object.autocomplete',
+        '#autocomplete_route_parameters' => 'child',
       );
 
       // Remove children.

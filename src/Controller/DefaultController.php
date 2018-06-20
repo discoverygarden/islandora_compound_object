@@ -12,15 +12,15 @@ use Drupal\Core\Controller\ControllerBase;
  */
 class DefaultController extends ControllerBase {
 
-  public function islandora_compound_object_access(AbstractObject $object, Drupal\Core\Session\AccountInterface $account) {
+  public function access(AbstractObject $object, Drupal\Core\Session\AccountInterface $account) {
     return islandora_object_access('administer compound relationships', $object);
   }
 
-  public function islandora_compound_object_manage(FedoraObject $object) {
+  public function manage(FedoraObject $object) {
     return \Drupal::formBuilder()->getForm('islandora_compound_object_manage_form', $object);
   }
 
-  public function islandora_compound_object_autocomplete($string, $parent = FALSE) {
+  public function autocomplete($string, $parent = FALSE) {
     $matches = [];
     $islandora_tuque = islandora_get_tuque_connection();
     $compound_enforcement = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children');
