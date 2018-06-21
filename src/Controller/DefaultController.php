@@ -6,6 +6,8 @@
 namespace Drupal\islandora_compound_object\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Default controller for the islandora_compound_object module.
@@ -20,7 +22,8 @@ class DefaultController extends ControllerBase {
     return \Drupal::formBuilder()->getForm('islandora_compound_object_manage_form', $object);
   }
 
-  public function autocomplete($string, $parent = FALSE) {
+  public function autocomplete(Request $request, $parent = FALSE) {
+    $string = $request->query->get('q');
     $matches = [];
     $islandora_tuque = islandora_get_tuque_connection();
     $compound_enforcement = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children');
@@ -47,7 +50,7 @@ class DefaultController extends ControllerBase {
     $escape_meta = function ($meta) {
       return "\\\\$meta";
     };
-    $meta_replacements = array_combine($meta, $escape_meta, $meta);
+    $meta_replacements = array_map($escape_meta, array_combine($meta, $meta));
 
     $replacements = [
       '!compound_model' => '?model',
@@ -72,12 +75,12 @@ EOQ;
     $results = $islandora_tuque->repository->ri->sparqlQuery($query, 'unlimited');
 
     foreach ($results as $result) {
-      $matches[$result['pid']['value']] = t('!title (!pid)', [
-        '!title' => $result['title']['value'],
-        '!pid' => $result['pid']['value'],
+      $matches[$result['pid']['value']] = t('@title (@pid)', [
+        '@title' => $result['title']['value'],
+        '@pid' => $result['pid']['value'],
       ]);
     }
-    drupal_json_output($matches);
+    return new JsonResponse(array_values($matches));
   }
 
   public function islandora_compound_object_task_access(AbstractObject $object, Drupal\Core\Session\AccountInterface $account) {
