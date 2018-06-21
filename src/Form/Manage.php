@@ -40,7 +40,7 @@ class Manage extends FormBase {
       $form['add_children']['child'] = array(
         '#type' => 'textfield',
         '#title' => $this->t('Child Object Pid/Label'),
-        '#autocomplete_route_name' => 'islandora_compound_object.autocomplete',
+        '#autocomplete_route_name' => 'islandora_compound_object.autocomplete_child',
         '#autocomplete_route_parameters' => ['object' => $object->id],
       );
 
@@ -82,7 +82,7 @@ class Manage extends FormBase {
     $form['add_to_parent']['parent'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Parent Object Pid/Label'),
-      '#autocomplete_route_name' => 'islandora_compound_object.autocomplete',
+      '#autocomplete_route_name' => 'islandora_compound_object.autocomplete_parent',
       '#autocomplete_route_parameters' => ['object' => $object->id],
     );
 
