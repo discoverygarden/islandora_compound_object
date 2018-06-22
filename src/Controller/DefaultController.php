@@ -73,14 +73,16 @@ LIMIT 10
 EOQ;
     $query = strtr($query, $replacements);
     $results = $islandora_tuque->repository->ri->sparqlQuery($query, 'unlimited');
-
     foreach ($results as $result) {
-      $matches[$result['pid']['value']] = t('@title (@pid)', [
-        '@title' => $result['title']['value'],
-        '@pid' => $result['pid']['value'],
-      ]);
+      $matches[] = [
+        'value' => t($result['pid']['value']),
+        'label' => t('@title (@pid)', [
+          '@title' => $result['title']['value'],
+          '@pid' => $result['pid']['value'],
+        ])
+      ];
     }
-    return new JsonResponse(array_values($matches));
+    return new JsonResponse($matches);
   }
 
   public function islandora_compound_object_task_access(AbstractObject $object, Drupal\Core\Session\AccountInterface $account) {

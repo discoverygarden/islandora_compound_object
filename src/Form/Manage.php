@@ -129,8 +129,50 @@ class Manage extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+  $object = $form_state->getValue('object');
+  $create_thumbs = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
+  // Relationship from child to this object.
+  if (!empty($form_state->getValue('child'))) {
+    $child_object = islandora_object_load($form_state->getValue('child'));
+ksm($form_state->getValue('child'));
+    islandora_compound_object_add_parent($child_object, $object->id);
+    if ($create_thumbs) {
+      islandora_compound_object_update_parent_thumbnail($object);
+    }
+  }
 
-}
+  // Add relationship to parent.
+  if (!empty($form_state->getValue('parent'))) {
+    islandora_compound_object_add_parent($object, $form_state->getValue('parent'));
+    if ($create_thumbs) {
+      islandora_compound_object_update_parent_thumbnail(islandora_object_load($form_state->getValue('parent')));
+    }
+  }
+
+  // Remove children.
+  // @todo Batch.
+  if (!empty($form_state->getValue('remove_children'))) {
+    islandora_compound_object_remove_parent(array_map('islandora_object_load', array_filter($form_state->getValue('remove_children'))), $object->id);
+    if ($create_thumbs) {
+      islandora_compound_object_update_parent_thumbnail($object);
+    }
+  }
+
+  // Unlink parents.
+  if (!empty($form_state->getValue('unlink_parents'))) {
+    foreach (array_filter($form_state->getValue('unlink_parents')) as $parent) {
+      islandora_compound_object_remove_parent($object, $parent);
+      if ($create_thumbs) {
+        $parent_object = islandora_object_load($parent);
+        islandora_compound_object_update_parent_thumbnail($parent_object);
+      }
+    }
+  }
+
+  // @TODO: Actually confirm.
+  drupal_set_message(t('Compound relationships modified.'));
+  }
 
 }
 
@@ -214,48 +256,6 @@ function islandora_compound_object_manage_form_validate($form, &$form_state) {
  * Compound object management submit.
  */
 function islandora_compound_object_manage_form_submit($form, &$form_state) {
-  $object = $form_state['values']['object'];
-  $create_thumbs = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
-  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
-  // Relationship from child to this object.
-  if (!empty($form_state['values']['child'])) {
-    $child_object = islandora_object_load($form_state['values']['child']);
-    islandora_compound_object_add_parent($child_object, $object->id);
-    if ($create_thumbs) {
-      islandora_compound_object_update_parent_thumbnail($object);
-    }
-  }
-
-  // Add relationship to parent.
-  if (!empty($form_state['values']['parent'])) {
-    islandora_compound_object_add_parent($object, $form_state['values']['parent']);
-    if ($create_thumbs) {
-      islandora_compound_object_update_parent_thumbnail(islandora_object_load($form_state['values']['parent']));
-    }
-  }
-
-  // Remove children.
-  // @todo Batch.
-  if (!empty($form_state['values']['remove_children'])) {
-    islandora_compound_object_remove_parent(array_map('islandora_object_load', array_filter($form_state['values']['remove_children'])), $object->id);
-    if ($create_thumbs) {
-      islandora_compound_object_update_parent_thumbnail($object);
-    }
-  }
-
-  // Unlink parents.
-  if (!empty($form_state['values']['unlink_parents'])) {
-    foreach (array_filter($form_state['values']['unlink_parents']) as $parent) {
-      islandora_compound_object_remove_parent($object, $parent);
-      if ($create_thumbs) {
-        $parent_object = islandora_object_load($parent);
-        islandora_compound_object_update_parent_thumbnail($parent_object);
-      }
-    }
-  }
-
-  // @TODO: Actually confirm.
-  drupal_set_message(t('Compound relationships modified.'));
 }
 
 /**
