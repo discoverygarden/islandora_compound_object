@@ -135,7 +135,6 @@ class Manage extends FormBase {
   // Relationship from child to this object.
   if (!empty($form_state->getValue('child'))) {
     $child_object = islandora_object_load($form_state->getValue('child'));
-ksm($form_state->getValue('child'));
     islandora_compound_object_add_parent($child_object, $object->id);
     if ($create_thumbs) {
       islandora_compound_object_update_parent_thumbnail($object);
