@@ -8,238 +8,6 @@
  */
 
 /**
- * Menu callback for manage form.
- */
-function islandora_compound_object_manage(FedoraObject $object) {
-  return \Drupal::formBuilder()->getForm('islandora_compound_object_manage_form', $object);
-}
-
-/**
- * Compound management form.
- */
-function islandora_compound_object_manage_form($form, &$form_state, $object) {
-  $form = array();
-  $form_state['object'] = $object;
-  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
-
-  // Add child objects.
-  if ((\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children') && in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) || !\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
-    $form['add_children'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Add Child Objects'),
-      '#description' => t('Add child objects as part of this compound object'),
-    );
-    $form['add_children']['child'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Child Object Pid/Label'),
-      '#autocomplete_path' => 'islandora_compound_object/autocomplete/child',
-    );
-
-    // Remove children.
-    $children = islandora_compound_object_get_parts($object->id, TRUE);
-    if (!empty($children)) {
-      $form['children'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Remove Child Objects'),
-        '#description' => t('Remove child objects of as part of this compound object'),
-        '#collapsed' => TRUE,
-        '#collapsible' => TRUE,
-      );
-
-      $header = array('title' => t('Title'), 'pid' => t('Object ID'));
-      $form['children']['remove_children'] = array(
-        '#type' => 'tableselect',
-        '#title' => t('Children'),
-        '#header' => $header,
-        '#options' => $children,
-      );
-      $form['reorder_fieldset'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Reorder'),
-        '#collapsed' => TRUE,
-        '#collapsible' => TRUE,
-      );
-      $form['reorder_fieldset']['table'] = array(
-        '#theme' => 'islandora_compound_object_draggable_table',
-      ) + islandora_compound_object_get_tabledrag_element($object);
-    }
-  }
-  // Add parents.
-  $form['add_to_parent'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Associate with Parent Object'),
-    '#description' => t('Add this object to a parent object'),
-  );
-  $form['add_to_parent']['parent'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Parent Object Pid/Label'),
-    '#autocomplete_path' => 'islandora_compound_object/autocomplete/parent',
-  );
-
-  // Remove parents.
-  $parent_part_of = $object->relationships->get('info:fedora/fedora-system:def/relations-external#', $rels_predicate);
-  if (!empty($parent_part_of)) {
-    $form['parents'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Unlink From Parent'),
-      '#description' => t('Remove the relationship between this object and parent objects.'),
-    );
-
-    $parents = array();
-    foreach ($parent_part_of as $parent) {
-      // Shouldn't be too much of a hit but would be good to avoid the
-      // islandora_object_loads.
-      $pid = $parent['object']['value'];
-      $parent_object = islandora_object_load($pid);
-      $parents[$pid] = array('title' => $parent_object->label, 'pid' => $pid);
-    }
-
-    $form['parents']['unlink_parents'] = array(
-      '#type' => 'tableselect',
-      '#title' => t('Parents'),
-      '#header' => array('title' => t('Title'), 'pid' => t('Object ID')),
-      '#options' => $parents,
-    );
-  }
-
-  $form['object'] = array(
-    '#type' => 'value',
-    '#value' => $object,
-  );
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-
-  return $form;
-}
-
-/**
- * Compound object management validation.
- */
-function islandora_compound_object_manage_form_validate($form, &$form_state) {
-  module_load_include('inc', 'islandora', 'includes/utilities');
-  $object = $form_state['values']['object'];
-  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
-
-  // Child.
-  if (!empty($form_state['values']['child'])) {
-    if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
-      $compound = FALSE;
-      foreach ($object->models as $value) {
-        if ($value == ISLANDORA_COMPOUND_OBJECT_CMODEL) {
-          $compound = TRUE;
-          break;
-        }
-      }
-      if (!$compound) {
-        form_set_error('child', t('This object is not a compound object'));
-      }
-    }
-
-    // Do not allow child of self.
-    if ($form_state['values']['child'] == $object->id) {
-      form_set_error('child', t('An object may not be a child of itself.'));
-    }
-
-    // Do not allow repeated child and check if valid child pid.
-    $child_object = islandora_object_load($form_state['values']['child']);
-    if ($child_object) {
-      $child_part_of = $child_object->relationships->get(FEDORA_RELS_EXT_URI, $rels_predicate);
-      foreach ($child_part_of as $part) {
-        if ($part['object']['value'] == $object->id) {
-          form_set_error('child', t('The object is already a parent of the child.'));
-        }
-      }
-    }
-    else {
-      form_set_error('child', t('Invalid object supplied.'));
-    }
-  }
-
-  // Parent.
-  if (!empty($form_state['values']['parent'])) {
-    // Check if valid parent pid.
-    $parent_object = islandora_object_load($form_state['values']['parent']);
-    if (!$parent_object) {
-      form_set_error('parent', t('Invalid object supplied.'));
-    }
-    else {
-      if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
-        if (!in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $parent_object->models)) {
-          form_set_error('parent', t('The parent object (@pid) is not a compound object!', array('@pid' => $form_state['values']['parent'])));
-        }
-      }
-      // Do not allow parent of self.
-      if ($form_state['values']['parent'] == $object->id) {
-        form_set_error('parent', t('An object may not be the parent of itself.'));
-      }
-      // Do not allow repeated parent.
-      $parent_part_of = $object->relationships->get(FEDORA_RELS_EXT_URI, $rels_predicate);
-      foreach ($parent_part_of as $part) {
-        if ($part['object']['value'] == $form_state['values']['parent']) {
-          form_set_error('parent', t('The object is already a child of the parent.'));
-        }
-      }
-    }
-  }
-
-  if (!empty($form_state['values']['parent']) && !empty($form_state['values']['child']) && $form_state['values']['parent'] == $form_state['values']['child']) {
-    form_set_error('child', t('An object may not be the parent and child of the same object.'));
-    form_set_error('parent');
-  }
-}
-
-/**
- * Compound object management submit.
- */
-function islandora_compound_object_manage_form_submit($form, &$form_state) {
-  $object = $form_state['values']['object'];
-  $create_thumbs = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
-  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
-  // Relationship from child to this object.
-  if (!empty($form_state['values']['child'])) {
-    $child_object = islandora_object_load($form_state['values']['child']);
-    islandora_compound_object_add_parent($child_object, $object->id);
-    if ($create_thumbs) {
-      islandora_compound_object_update_parent_thumbnail($object);
-    }
-  }
-
-  // Add relationship to parent.
-  if (!empty($form_state['values']['parent'])) {
-    islandora_compound_object_add_parent($object, $form_state['values']['parent']);
-    if ($create_thumbs) {
-      islandora_compound_object_update_parent_thumbnail(islandora_object_load($form_state['values']['parent']));
-    }
-  }
-
-  // Remove children.
-  // @todo Batch.
-  if (!empty($form_state['values']['remove_children'])) {
-    islandora_compound_object_remove_parent(array_map('islandora_object_load', array_filter($form_state['values']['remove_children'])), $object->id);
-    if ($create_thumbs) {
-      islandora_compound_object_update_parent_thumbnail($object);
-    }
-  }
-
-  // Unlink parents.
-  if (!empty($form_state['values']['unlink_parents'])) {
-    foreach (array_filter($form_state['values']['unlink_parents']) as $parent) {
-      islandora_compound_object_remove_parent($object, $parent);
-      if ($create_thumbs) {
-        $parent_object = islandora_object_load($parent);
-        islandora_compound_object_update_parent_thumbnail($parent_object);
-      }
-    }
-  }
-
-  // @TODO: Actually confirm.
-  drupal_set_message(t('Compound relationships modified.'));
-}
-
-/**
  * Returns the table to be used for tabledragging.
  *
  * @param AbstractObject $object
@@ -254,26 +22,47 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
   $delta = count($children);
   $map = function($child) use($delta, &$seq) {
     $seq++;
-    return array(
-      'label' => array('#markup' => \Drupal\Component\Utility\Html::escape($child['title'])),
-      'pid' => array('#markup' => \Drupal\Component\Utility\Html::escape($child['pid'])),
+    return [
+      '#attributes' => [
+        'class' => ['draggable'],
+      ],
+      '#weight' => $seq,
+      'label' => [
+        '#type' => 'item',
+        '#markup' => \Drupal\Component\Utility\Html::escape($child['title']),
+      ],
+      'pid' => [
+      '#type' => 'item',
+      '#markup' => \Drupal\Component\Utility\Html::escape($child['pid']),
+      ],
       'weight' => array(
         '#type' => 'weight',
         '#title' => t('Weight'),
         '#default_value' => $seq,
         '#delta' => $delta,
         '#title-display' => 'invisible',
-      ));
+        '#attributes' => [
+          'class' => ['islandora-compound-object-reorder-table-order-weight'],
+        ],
+      ),
+    ];
   };
   $rows = array_map($map, $children);
-
-  return array(
+  $tabledrag_element = array(
+    '#type' => 'table',
     '#tree' => TRUE,
-    'table' => array(
-      '#type' => 'markup',
-      '#header' => array(t('Title'), t('Object ID'), t('Weight')),
-      'rows' => $rows,
-    ),
+    '#header' => array(t('Title'), t('Object ID'), t('Weight')),
+    '#tabledrag' => [
+      [
+        'action' => 'order',
+        'relationship' => 'sibling',
+        'group' => 'islandora-compound-object-reorder-table-order-weight',
+      ],
+    ],
+    '#attributes' => [
+      'id' => 'islandora-compound-object-reorder-table',
+    ],
+  ) + $rows + array(
     'actions' => array(
       '#type' => 'actions',
       'submit' => array(
@@ -283,6 +72,7 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
       ),
     ),
   );
+  return $tabledrag_element;
 }
 
 /**
