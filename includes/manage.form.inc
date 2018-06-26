@@ -40,7 +40,7 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
         '#title' => t('Weight'),
         '#default_value' => $seq,
         '#delta' => $delta,
-        '#title-display' => 'invisible',
+        '#title_display' => 'invisible',
         '#attributes' => [
           'class' => ['islandora-compound-object-reorder-table-order-weight'],
         ],
@@ -48,30 +48,33 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
     ];
   };
   $rows = array_map($map, $children);
-  $tabledrag_element = array(
-    '#type' => 'table',
-    '#tree' => TRUE,
-    '#header' => array(t('Title'), t('Object ID'), t('Weight')),
-    '#tabledrag' => [
-      [
-        'action' => 'order',
-        'relationship' => 'sibling',
-        'group' => 'islandora-compound-object-reorder-table-order-weight',
+  $tabledrag_element = [
+    [
+      '#type' => 'table',
+      '#tree' => TRUE,
+      '#header' => [t('Title'), t('Object ID'), t('Weight')],
+      '#tabledrag' => [
+        [
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => 'islandora-compound-object-reorder-table-order-weight',
+        ],
+      ],
+      '#attributes' => [
+        'id' => 'islandora-compound-object-reorder-table',
+      ],
+    ] + $rows,
+    [
+      'actions' => [
+        '#type' => 'actions',
+        'submit' => [
+          '#type' => 'submit',
+          '#value' => t('Save Changes'),
+          '#submit' => ['islandora_compound_object_sequence_submit'],
+        ],
       ],
     ],
-    '#attributes' => [
-      'id' => 'islandora-compound-object-reorder-table',
-    ],
-  ) + $rows + array(
-    'actions' => array(
-      '#type' => 'actions',
-      'submit' => array(
-        '#type' => 'submit',
-        '#value' => t('Save Changes'),
-        '#submit' => array('islandora_compound_object_sequence_submit'),
-      ),
-    ),
-  );
+  ];
   return $tabledrag_element;
 }
 

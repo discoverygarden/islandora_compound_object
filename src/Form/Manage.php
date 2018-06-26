@@ -49,11 +49,10 @@ class Manage extends FormBase {
       $children = islandora_compound_object_get_parts($object->id, TRUE);
       if (!empty($children)) {
         $form['children'] = array(
-          '#type' => 'fieldset',
+          '#type' => 'details',
           '#title' => $this->t('Remove Child Objects'),
           '#description' => $this->t('Remove child objects of as part of this compound object'),
-          '#collapsed' => TRUE,
-          '#collapsible' => TRUE,
+          '#open' => FALSE,
         );
 
         $header = array('title' => $this->t('Title'), 'pid' => $this->t('Object ID'));
@@ -64,10 +63,9 @@ class Manage extends FormBase {
           '#options' => $children,
         );
         $form['reorder_fieldset'] = array(
-          '#type' => 'fieldset',
+          '#type' => 'details',
           '#title' => $this->t('Reorder'),
-          '#collapsed' => TRUE,
-          '#collapsible' => TRUE,
+          '#open' => FALSE,
         );
         $form['reorder_fieldset']['table'] = array(
         ) + islandora_compound_object_get_tabledrag_element($object);
