@@ -108,12 +108,6 @@ $form_state_values = &$form_state->getValues();
  */
 function islandora_compound_object_sequence_batch($pid, array $compounds) {
   $object = islandora_object_load($pid);
-  $context['results'] = array(
-    'success' => array(),
-    'failure' => array(),
-  );
-  $context['sandbox']['progress'] = 0;
-  $context['sandbox']['total'] = count($compounds);
   $operations = islandora_compound_object_build_sequence_operations($pid, $compounds);
   $batch = array(
     'operations' => $operations,

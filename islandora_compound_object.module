@@ -8,6 +8,8 @@
  * Hook implementations and general functions.
  */
 
+use Drupal\islandora\MimeDetect;
+
 define('ISLANDORA_COMPOUND_OBJECT_CMODEL', 'islandora:compoundCModel');
 
 const ISLANDORA_COMPOUND_OBJECT_LEGACY_BACKEND = 'islandora_compound_object_legacy_sparql';
