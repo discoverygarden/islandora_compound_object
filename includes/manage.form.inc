@@ -7,6 +7,8 @@
  * Compound object management callback and form.
  */
 
+use \Drupal\Component\Utility\SortArray;
+
 /**
  * Returns the table to be used for tabledragging.
  *
@@ -87,10 +89,11 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
  *   The Drupal form state.
  */
 function islandora_compound_object_sequence_submit($form, &$form_state) {
-  $object = $form_state['object'];
-  $compounds = &$form_state['values']['table']['table']['rows'];
+$form_state_values = &$form_state->getValues();
+  $object = $form_state_values['object'];
+  $compounds = &$form_state_values['0'];
   if ($compounds) {
-    uasort($compounds, 'drupal_sort_weight');
+    uasort($compounds, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
     islandora_compound_object_sequence_batch($object->id, $compounds);
   }
 }
