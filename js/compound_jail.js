@@ -5,12 +5,12 @@
 
 (function ($) {
     Drupal.behaviors.islandora_compound_object_JAIL = {
-        attach: function(context, settings) {
+        attach: function (context, settings) {
             $('img.islandora-compound-object-jail').jail({
                 triggerElement:'#block-islandora-compound-object-compound-jail-display',
                 event: 'scroll',
-                error: function($img, options) {
-                    if( $img.attr("src") == Drupal.settings.islandora_compound_object.image_path ) {
+                error: function ($img, options) {
+                    if ($img.attr("src") == Drupal.settings.islandora_compound_object.image_path) {
                         return;
                     }
 
