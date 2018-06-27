@@ -8,6 +8,7 @@
  * Hook implementations and general functions.
  */
 
+use Drupal\islandora\Controller\DefaultController;
 use Drupal\islandora\MimeDetect;
 
 define('ISLANDORA_COMPOUND_OBJECT_CMODEL', 'islandora:compoundCModel');
@@ -203,15 +204,14 @@ function islandora_compound_object_islandora_compoundCModel_islandora_view_objec
       else {
         // Get view of first child.
         $first_child = islandora_object_load($first_child_id);
-        // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-// 
-// 
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title($first_child->label);
 
-        return islandora_view_object($first_child);
+        // XXX: This is a hacky way to get around the change from
+        // islandora_view_object() to viewObject in the Default Controller in
+        // Islandora.
+        $controller = DefaultController::create(Drupal::getContainer());
+        $to_return = $controller->viewObject($first_child, Drupal::request());
+        $to_return['#title'] = $first_child->label;
+        return $to_return;
       }
     }
   }
