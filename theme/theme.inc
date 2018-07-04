@@ -2,10 +2,10 @@
 
 /**
  * @file
- * theme/theme.inc
- *
  * Theme functions.
  */
+
+use Drupal\Core\Render\Element;
 
 /**
  * Theme function for the compound navigation block parts.
@@ -21,18 +21,16 @@ function template_preprocess_islandora_compound_prev_next(array &$variables) {
 // drupal_add_js(drupal_get_path('module', 'islandora_compound_object') . '/js/caption_width.js');
 
 
-  $themed_siblings = array();
+  $themed_siblings = [];
   $image_path = drupal_get_path('module', 'islandora');
   $folder_image_path = "$image_path/images/folder.png";
 
   // If the parent hasModel islandora:compoundCModel,
   // the first child is typically identical to the parent;
   // do not show the parent TN.
-
   // If the parent does not have hasModel islandora:compoundCModel,
   // the first child and parent are different;
   // show the parent TN.
-
   $variables['parent_tn'] = NULL;
   $parent_object = islandora_object_load($variables['parent_pid']);
   if ($parent_object && !in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $parent_object->models)) {
@@ -46,12 +44,11 @@ function template_preprocess_islandora_compound_prev_next(array &$variables) {
 
   // If the parent TN is not set, only show children if there's more than one.
   // If the parent TN is set, show all children even if there's only one.
-
   if (($variables['child_count'] > 1 && !$variables['parent_tn']) || ($variables['child_count'] > 0 && $variables['parent_tn'])) {
     for ($i = 0; $i < count($variables['siblings']); $i += 1) {
-      $sibling = array();
+      $sibling = [];
       $sibling['pid'] = $variables['siblings'][$i];
-      $sibling['class'] = array();
+      $sibling['class'] = [];
       if ($sibling['pid'] === $variables['pid']) {
         $sibling['class'][] = 'active';
       }
@@ -71,26 +68,25 @@ function template_preprocess_islandora_compound_prev_next(array &$variables) {
   $variables['themed_siblings'] = $themed_siblings;
 }
 
-
 /**
  * Implements theme_element().
  */
 function theme_islandora_compound_object_draggable_table(array $variables) {
   $form = $variables['form'];
-  $rows = array();
+  $rows = [];
   $weight_class = 'islandora-page-weight';
   $table = &$form['table'];
   foreach (\Drupal\Core\Render\Element::children($table['rows']) as $id) {
     $row = &$table['rows'][$id];
-    $row['weight']['#attributes'] = array('class' => array($weight_class));
-    $rows[] = array(
-      'data' => array(
+    $row['weight']['#attributes'] = ['class' => [$weight_class]];
+    $rows[] = [
+      'data' => [
         \Drupal::service("renderer")->render($row['label']),
         \Drupal::service("renderer")->render($row['pid']),
         \Drupal::service("renderer")->render($row['weight']),
-      ),
-      'class' => array('draggable'),
-    );
+      ],
+      'class' => ['draggable'],
+    ];
   }
   $table_id = 'islandora-reorder-objects-table';
   // @FIXME
@@ -105,7 +101,6 @@ function theme_islandora_compound_object_draggable_table(array $variables) {
 //               'header' => $table['#header'],
 //               'rows' => $rows,
 //               'attributes' => array('id' => $table_id)));
-
   $output .= drupal_render_children($form);
   // @FIXME
 // TableDrag is now attached with the #tabledrag property of certain render

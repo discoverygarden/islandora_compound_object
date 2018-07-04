@@ -2,19 +2,18 @@
 
 /**
  * @file
- * includes/admin.form.inc
- *
- * Module admin form.
+ * Helper methods for admin form.
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Check if the JAIL is available.
  *
  * @param array $element
  *   The element to check.
- * @param FormStateInterface $form_state
+ * @param Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param array $form
  *   The Drupal form definition.
@@ -23,9 +22,9 @@ function islandora_compound_object_admin_form_jail_validation(array $element, Fo
   if ($element['#value'] == 1 && !libraries_get_path('JAIL')) {
     $element['#value'] = 0;
     $form_state->setValue($element['#name'], $element['#value']);
-    drupal_set_message(t('The <a href="@url">JAIL</a> library must be present in the libraries folder to use this display.', array(
+    drupal_set_message(t('The <a href="@url">JAIL</a> library must be present in the libraries folder to use this display.', [
       '@url' => \Drupal\Core\Url::fromUri('https://github.com/sebarmeli/JAIL')->toString(),
-    )), 'error');
+    ]), 'error');
   }
 }
 
@@ -34,7 +33,7 @@ function islandora_compound_object_admin_form_jail_validation(array $element, Fo
  *
  * @param array $element
  *   The element to check.
- * @param FormStateInterface $form_state
+ * @param Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  * @param array $form
  *   The Drupal form definition.
@@ -45,7 +44,7 @@ function islandora_compound_object_admin_form_redirect_to_first_validation(array
       $first_title = rtrim($element['#title'], '.!?');
       $parent_title = rtrim($form['islandora_compound_object_show_compound_parents_in_breadcrumbs']['#title'], '.!?');
       drupal_set_message(t("Enabling both @first and @parent is not recommended, because the compound object parent in the breadcrumb will be redirect to the first child, so cannot be actually reached.",
-        array('@first' => $first_title, '@parent' => $parent_title)), 'warning');
+        ['@first' => $first_title, '@parent' => $parent_title]), 'warning');
     }
   }
 }
@@ -53,9 +52,9 @@ function islandora_compound_object_admin_form_redirect_to_first_validation(array
 /**
  * Solr fq element state validation callback.
  *
- * @param $element
+ * @param array $element
  *   The form element.
- * @param FormStateInterface $form_state
+ * @param Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
  */
 function islandora_compound_object_solr_fq_validate(array $element, FormStateInterface &$form_state) {

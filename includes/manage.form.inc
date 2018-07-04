@@ -2,12 +2,11 @@
 
 /**
  * @file
- * includes/manage.form.inc
- *
- * Compound object management callback and form.
+ * Compound object management callback.
  */
 
-use \Drupal\Component\Utility\SortArray;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Html;
 
 /**
  * Returns the table to be used for tabledragging.
@@ -22,7 +21,7 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
   $children = islandora_compound_object_get_parts($object->id, TRUE);
   $seq = 0;
   $delta = count($children);
-  $map = function($child) use($delta, &$seq) {
+  $map = function ($child) use ($delta, &$seq) {
     $seq++;
     return [
       '#attributes' => [
@@ -34,10 +33,10 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
         '#markup' => \Drupal\Component\Utility\Html::escape($child['title']),
       ],
       'pid' => [
-      '#type' => 'item',
-      '#markup' => \Drupal\Component\Utility\Html::escape($child['pid']),
+        '#type' => 'item',
+        '#markup' => \Drupal\Component\Utility\Html::escape($child['pid']),
       ],
-      'weight' => array(
+      'weight' => [
         '#type' => 'weight',
         '#title' => t('Weight'),
         '#default_value' => $seq,
@@ -46,7 +45,7 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
         '#attributes' => [
           'class' => ['islandora-compound-object-reorder-table-order-weight'],
         ],
-      ),
+      ],
     ];
   };
   $rows = array_map($map, $children);
@@ -85,15 +84,15 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
  *
  * @param array $form
  *   The Drupal form.
- * @param array $form_state
+ * @param Drupal\Core\Form\FormStateInterface $form_state
  *   The Drupal form state.
  */
-function islandora_compound_object_sequence_submit($form, &$form_state) {
-$form_state_values = &$form_state->getValues();
+function islandora_compound_object_sequence_submit(array $form, FormStateInterface &$form_state) {
+  $form_state_values = &$form_state->getValues();
   $object = $form_state_values['object'];
   $compounds = &$form_state_values['0'];
   if ($compounds) {
-    uasort($compounds, array('Drupal\Component\Utility\SortArray', 'sortByWeightElement'));
+    uasort($compounds, ['Drupal\Component\Utility\SortArray', 'sortByWeightElement']);
     islandora_compound_object_sequence_batch($object->id, $compounds);
   }
 }
@@ -109,14 +108,14 @@ $form_state_values = &$form_state->getValues();
 function islandora_compound_object_sequence_batch($pid, array $compounds) {
   $object = islandora_object_load($pid);
   $operations = islandora_compound_object_build_sequence_operations($pid, $compounds);
-  $batch = array(
+  $batch = [
     'operations' => $operations,
-    'title' => t("Sequencing @label's compound objects ...", array('@label' => $object->label)),
-    'init_message' => t("Preparing to sequence @label's child objects ...", array('@label' => $object->label)),
+    'title' => t("Sequencing @label's compound objects ...", ['@label' => $object->label]),
+    'init_message' => t("Preparing to sequence @label's child objects ...", ['@label' => $object->label]),
     'progress_message' => t('Time elapsed: @elapsed <br/>Estimated time remaining @estimate.'),
     'error_message' => t('An error has occurred.'),
     'file' => drupal_get_path('module', 'islandora_compound_object') . '/includes/manage.form.inc',
-  );
+  ];
   batch_set($batch);
 }
 
@@ -144,24 +143,24 @@ function islandora_compound_object_change_thumbnail($parent) {
  * @return array
  *   The built up operations array.
  */
-function islandora_compound_object_build_sequence_operations($parent_pid, $compounds) {
-  $operations = array();
+function islandora_compound_object_build_sequence_operations($parent_pid, array $compounds) {
+  $operations = [];
   $start_seq = 1;
   foreach ($compounds as $child_pid => $weight) {
-    $operations[] = array(
-      'islandora_compound_object_update_sequence', array(
+    $operations[] = [
+      'islandora_compound_object_update_sequence', [
         $parent_pid,
         $child_pid,
         $start_seq,
-      ),
-    );
+      ],
+    ];
     $start_seq++;
   }
-  $operations[] = array(
-    'islandora_compound_object_change_thumbnail', array(
+  $operations[] = [
+    'islandora_compound_object_change_thumbnail', [
       $parent_pid,
-    ),
-  );
+    ],
+  ];
   return $operations;
 }
 
@@ -171,21 +170,20 @@ function islandora_compound_object_build_sequence_operations($parent_pid, $compo
  * @param string $parent_pid
  *   The pid of the parent object.
  * @param array $child_pid
- *   The pid of the child object;
+ *   The pid of the child object.
  * @param array $context
  *   Context used in the batch.
  */
-function islandora_compound_object_update_sequence($parent_pid, $child_pid, $start_seq, &$context) {
+function islandora_compound_object_update_sequence($parent_pid, array $child_pid, $start_seq, array &$context) {
   $escaped_pid = str_replace(':', '_', $parent_pid);
   $child_object = islandora_object_load($child_pid);
   $child_object->relationships->remove(ISLANDORA_RELS_EXT_URI, "isSequenceNumberOf$escaped_pid");
   $child_object->relationships->add(ISLANDORA_RELS_EXT_URI, "isSequenceNumberOf$escaped_pid", $start_seq, RELS_TYPE_PLAIN_LITERAL);
-  $context['message'] = t('Inserting page "@label" (@pid) at position "@pos"', array(
+  $context['message'] = t('Inserting page "@label" (@pid) at position "@pos"', [
     '@label' => $child_object->label,
     '@pid' => $child_object->id,
     '@pos' => $start_seq,
-    )
-  );
+  ]);
 }
 
 /**
@@ -197,7 +195,7 @@ function islandora_compound_object_update_sequence($parent_pid, $child_pid, $sta
  * @return int
  *   The point at which we are to insert the compound object.
  */
-function islandora_compound_object_get_insert_sequence_number($children) {
+function islandora_compound_object_get_insert_sequence_number(array $children) {
   $insert_seq = 0;
   foreach ($children as $child) {
     if (!empty($child['seq']) && $child['seq'] > $insert_seq) {
@@ -219,7 +217,7 @@ function islandora_compound_object_get_insert_sequence_number($children) {
  *   added, to make each member of $objects a member of multiple compounds.
  */
 function islandora_compound_object_add_parent($objects, $parent_pids) {
-  $objects = $objects instanceof AbstractObject ? array($objects) : $objects;
+  $objects = $objects instanceof AbstractObject ? [$objects] : $objects;
   $parent_pids = (array) $parent_pids;
   $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
 
@@ -250,7 +248,7 @@ function islandora_compound_object_add_parent($objects, $parent_pids) {
  *   An array of PIDs from which the members of $objects will be removed.
  */
 function islandora_compound_object_remove_parent($objects, $parent_pids) {
-  $objects = $objects instanceof AbstractObject ? array($objects) : $objects;
+  $objects = $objects instanceof AbstractObject ? [$objects] : $objects;
   $parent_pids = (array) $parent_pids;
   $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
 

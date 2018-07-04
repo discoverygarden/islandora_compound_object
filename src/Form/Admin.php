@@ -1,16 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\islandora_compound_object\Form\IslandoraCompoundObjectAdminForm.
- */
-
 namespace Drupal\islandora_compound_object\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
+use Drupal\Core\Url;
 
+/**
+ * Module settings form.
+ */
 class Admin extends ConfigFormBase {
 
   /**
@@ -95,18 +93,18 @@ class Admin extends ConfigFormBase {
       '#description' => $this->t('Filter compound object children from Solr results.'),
       '#default_value' => $config->get('islandora_compound_object_solr_fq'),
       '#element_validate' => [
-        'islandora_compound_object_solr_fq_validate'
-        ],
+        'islandora_compound_object_solr_fq_validate',
+      ],
       '#states' => [
         'visible' => [
           ':input[name="islandora_compound_object_hide_child_objects_solr"]' => [
-            'checked' => TRUE
-            ]
+            'checked' => TRUE,
+            ],
           ],
         'required' => [
           ':input[name="islandora_compound_object_hide_child_objects_solr"]' => [
-            'checked' => TRUE
-            ]
+            'checked' => TRUE,
+            ],
           ],
       ],
     ];
@@ -124,10 +122,10 @@ class Admin extends ConfigFormBase {
       '#title' => $this->t('Use alternative, autoloading display for compounds?'),
       '#description' => $this->t('<b>Requires</b> <a href="@url">JAIL</a> library to be present.', [
         '@url' => \Drupal\Core\Url::fromUri('https://github.com/sebarmeli/JAIL')->toString(),
-        ]),
+      ]),
       '#default_value' => $config->get('islandora_compound_object_use_jail_view'),
       '#element_validate' => [
-        'islandora_compound_object_admin_form_jail_validation'
+        'islandora_compound_object_admin_form_jail_validation',
         ],
     ];
 
@@ -150,7 +148,7 @@ class Admin extends ConfigFormBase {
       '#description' => $this->t('Users will be redirected to the first child of a Compound Object when enabling this setting.'),
       '#default_value' => $config->get('islandora_compound_object_redirect_to_first'),
       '#element_validate' => [
-        'islandora_compound_object_admin_form_redirect_to_first_validation'
+        'islandora_compound_object_admin_form_redirect_to_first_validation',
         ],
     ];
 

@@ -44,3 +44,36 @@ islandora_compound_object.autocomplete_parent:
         type: object
   requirements:
     _islandora_object_access: 'true'
+islandora_compound_object.next:
+  path: '/islandora/object/{object}/compound_next'
+  defaults:
+    perms: 'administer compound relationships'
+    _title: 'Compound Next'
+    options:
+    parameters:
+      object:
+        type: object
+  requirements:
+    _islandora_object_access: 'true'
+islandora_compound_object.previous:
+  path: '/islandora/object/{object}/compound_previous'
+  defaults:
+    perms: 'administer compound relationships'
+    _title: 'Compound Previous'
+    options:
+    parameters:
+      object:
+        type: object
+  requirements:
+    _islandora_object_access: 'true'
+islandora_compound_object.count:
+  path: '/islandora/object/{object}/compound_count'
+  defaults:
+    perms: 'administer compound relationships'
+    _title: 'Compound Count'
+  options:
+    parameters:
+      object:
+        type: object
+  requirements:
+    _islandora_object_access: 'true'

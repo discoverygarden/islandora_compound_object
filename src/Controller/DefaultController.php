@@ -5,6 +5,7 @@ namespace Drupal\islandora_compound_object\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Default controller for the islandora_compound_object module.
@@ -18,6 +19,9 @@ class DefaultController extends ControllerBase {
     return islandora_object_access('administer compound relationships', $object);
   }
 
+  /**
+   * Manage callback for compound object management.
+   */
   public function manage(FedoraObject $object) {
     return \Drupal::formBuilder()->getForm('islandora_compound_object_manage_form', $object);
   }
@@ -25,8 +29,9 @@ class DefaultController extends ControllerBase {
   /**
    * Autocomplete callback for child object search.
    *
-   * @param string $string
-   *   The user supplied string that is being searched for.
+   * @param Request $request
+   *   The user supplied request containing the string being searched for.
+   *
    * @param bool $parent
    *   A flag indicating if we are to return objects usable as parents.
    */
@@ -94,27 +99,6 @@ EOQ;
       ];
     }
     return new JsonResponse($matches);
-  }
-
-  /**
-   * Access callback for tabs that aren't tabs.
-   *
-   * @param AbstractObject $object
-   *   An AbstractObject representing a Fedora object.
-   *
-   * @return bool
-   *   TRUE if the user has access, FALSE otherwise.
-   */
-  public function islandora_compound_object_task_access(AbstractObject $object, Drupal\Core\Session\AccountInterface $account) {
-    $config = \Drupal::config('islandora_compound_object.settings');
-    $rels_predicate = $config->get('islandora_compound_object_relationship');
-    $part_of = $object->relationships->get(FEDORA_RELS_EXT_URI, $rels_predicate);
-    if ($config->get('islandora_compound_object_use_jail_view') && islandora_object_access(ISLANDORA_VIEW_OBJECTS, $object) && ((in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models) && islandora_compound_object_children_exist($object)) || !empty($part_of))) {
-      return TRUE;
-    }
-    else {
-      return FALSE;
-    }
   }
 
 }

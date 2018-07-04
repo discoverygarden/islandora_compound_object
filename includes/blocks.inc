@@ -5,6 +5,8 @@
  * Holds block definitions for the compound solution pack.
  */
 
+use Drupal\Component\Utility\UrlHelper;
+
 /**
  * Constructs the JAIL display block for a compound.
  *
@@ -12,24 +14,24 @@
  *   Renderable array for the block.
  */
 function islandora_compound_object_jail_display_block() {
-  $block = array();
+  $block = [];
   $object = \Drupal::routeMatch()->getParameter('islandora_object', 2);
   if ($object) {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     if (!empty($compound_info)) {
       $module_path = drupal_get_path('module', 'islandora_compound_object');
       $jail_path = libraries_get_path('JAIL');
-      $block['#attached']['js'] = array(
-        "$jail_path/lib/jquery.js" => array(
+      $block['#attached']['js'] = [
+        "$jail_path/lib/jquery.js" => [
           'group' => JS_LIBRARY,
-        ),
-        "$jail_path/dist/jail.min.js" => array(
+        ],
+        "$jail_path/dist/jail.min.js" => [
           'group' => JS_LIBRARY,
-        ),
-        "$module_path/js/compound_jail.js" => array(
+        ],
+        "$module_path/js/compound_jail.js" => [
           'group' => JS_LIBRARY,
-        ),
-      );
+        ],
+      ];
       // @FIXME
 // url() expects a route name or an external URI.
 // $block['#attached']['js'][] = array(
@@ -41,17 +43,17 @@ function islandora_compound_object_jail_display_block() {
 //         'type' => 'setting',
 //       );
 
-      $block['#attached']['css'] = array(
+      $block['#attached']['css'] = [
         "$module_path/css/islandora_compound_object.jail_block.css",
-      );
-      $block['part_title'] = array(
+      ];
+      $block['part_title'] = [
         '#type' => 'item',
-        '#markup' => t('Part of: @label (@count @obj)', array(
+        '#markup' => t('Part of: @label (@count @obj)', [
           '@label' => $compound_info['parent_label'],
           '@count' => $compound_info['child_count'],
           '@obj' => \Drupal::translation()->formatPlural($compound_info['child_count'], 'object', 'objects'),
-        )),
-      );
+        ]),
+      ];
       if ($compound_info['parent_url']) {
         // @FIXME
 // l() expects a Url object, created from a route name or external URI.
@@ -65,9 +67,9 @@ function islandora_compound_object_jail_display_block() {
       $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters();
       foreach ($compound_info['siblings_detailed'] as $sibling) {
         $path = 'islandora/object/' . $sibling['pid'] . '/datastream/TN/view';
-        $class = array(
+        $class = [
           'islandora-compound-object-jail',
-        );
+        ];
         if ($sibling['pid'] == $compound_info['current_pid']) {
           $class[] = 'islandora-compound-object-jail-active';
         }
@@ -91,26 +93,26 @@ function islandora_compound_object_jail_display_block() {
 //           ),
 //         );
 
-        $block[$sibling['pid']] = array(
+        $block[$sibling['pid']] = [
           '#type' => 'container',
-          '#attributes' => array(),
-          'link' => array(
+          '#attributes' => [],
+          'link' => [
             '#type' => 'link',
             '#title' => $sibling['title'],
             '#href' => "islandora/object/{$sibling['pid']}",
-            '#options' => array('query' => $query_params),
-          ),
-          'content' => array(
+            '#options' => ['query' => $query_params],
+          ],
+          'content' => [
             '#theme' => 'link',
             '#text' => \Drupal::service("renderer")->render($img),
             '#path' => "islandora/object/{$sibling['pid']}",
-            '#options' => array(
-              'attributes' => array(),
+            '#options' => [
+              'attributes' => [],
               'html' => TRUE,
               'query' => $query_params,
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
     }
   }
@@ -158,7 +160,7 @@ function islandora_compound_object_navigation_block(AbstractObject $object = NUL
       }
 
       if (!empty($output)) {
-        return array('#markup' => $output);
+        return ['#markup' => $output];
       }
     }
   }

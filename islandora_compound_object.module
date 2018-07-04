@@ -2,13 +2,14 @@
 
 /**
  * @file
- * Islandora Compound Object Solution Pack
- * 
+ * Islandora Compound Object Solution Pack.
+ *
  * Enables parent-child relationships between objects with navigation features.
  *
  * Hook implementations and general functions.
  */
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\islandora\Controller\DefaultController;
 use Drupal\islandora\MimeDetect;
 
@@ -37,11 +38,11 @@ function islandora_compound_object_theme($existing, $type, $theme, $path) {
         'pid' => NULL,
       ],
     ],
-    'islandora_compound_object_draggable_table' => array(
+    'islandora_compound_object_draggable_table' => [
       'render element' => 'form',
       'file' => 'theme/theme.inc',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -179,8 +180,11 @@ function islandora_compound_object_xml_form_builder_form_associations() {
 /**
  * Implements hook_islandora_cmodel_islandora_view_object().
  */
-function islandora_compound_object_islandora_compoundCModel_islandora_view_object($object) {
+function islandora_compound_object_islandora_compoundcmodel_islandora_view_object($object) {
+  module_load_include('inc', 'islandora', 'includes/utilities');
+  $to_return = [];
   $children = islandora_compound_object_get_parts($object->id);
+  // View for compound objects that are parents.
   if (!empty($children)) {
     $first_child_id = reset($children);
     if ($first_child_id != $object->id) {
@@ -188,7 +192,7 @@ function islandora_compound_object_islandora_compoundCModel_islandora_view_objec
         // Redirect to the first child of a compound.
         $redirect_path = 'islandora/object/' . $first_child_id;
         $options = [];
-        $options['query'] = \Drupal\Component\Utility\UrlHelper::filterQueryParameters();
+        $options['query'] = UrlHelper::filterQueryParameters();
 
         drupal_goto($redirect_path, $options);
       }
@@ -198,14 +202,46 @@ function islandora_compound_object_islandora_compoundCModel_islandora_view_objec
 
         // XXX: This is a hacky way to get around the change from
         // islandora_view_object() to viewObject in the Default Controller in
-        // Islandora.
+        // Islandora. It will end up calling this function back, and if this
+        // function returns empty, then islandora_default_islandora_view_object
+        // is called from controller->viewObject().
         $controller = DefaultController::create(Drupal::getContainer());
         $to_return = $controller->viewObject($first_child, Drupal::request());
         $to_return['#title'] = $first_child->label;
-        return $to_return;
       }
     }
   }
+  // JAIL view for objects that are parents or children.
+  // Moved to this hook from hook_menu_local_tasks_alter as part of Drupal 8
+  // port, since drupal_set_title is deprecated and there is no way to set the
+  // title from that hook anymore.
+  if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view')) {
+    $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
+    if ($compound_info) {
+      if ($object->id == $compound_info['parent_pid']) {
+        // We are the parent so don't repeat the label twice.
+        $to_return['#title'] = $compound_info['parent_label'];
+      }
+      else {
+        // Display both the parent and child label.
+        // XXX: Related to how Islandora\DefaultController::viewObject works:
+        // This hook used to return empty for child objects, meaning viewObject
+        // would call islandora_default_islandora_view_object(). When this hook
+        // does not return empty, we need to set the rest of the render array
+        // to fill out the information for the page. If we were to call
+        // viewObject from here, there would be an endless loop of function
+        // calls, with this never returning empty, so we must call
+        // islandora_default_islandora_view_object directly to view child
+        // objects from this hook.
+        $to_return = islandora_default_islandora_view_object($object);
+        $to_return['#title'] = t('@parent - @child', [
+          '@parent' => $compound_info['parent_label'],
+          '@child' => $compound_info['label'],
+        ]);
+      }
+    }
+  }
+  return $to_return;
 }
 
 /**
@@ -218,7 +254,7 @@ function islandora_compound_object_access(AbstractObject $object) {
 /**
  * Implements hook_CMODEL_islandora_derivative().
  */
-function islandora_compound_object_islandora_compoundCModel_islandora_derivative(AbstractObject $object = NULL, $ds_modified_params = []) {
+function islandora_compound_object_islandora_compoundcmodel_islandora_derivative(AbstractObject $object = NULL, $ds_modified_params = []) {
   $module_path = drupal_get_path('module', 'islandora_compound_object');
   $derivatives = [];
   if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_tn_deriv_hooks')) {
@@ -237,7 +273,7 @@ function islandora_compound_object_islandora_compoundCModel_islandora_derivative
 /**
  * Implements hook_islandora_derivative().
  */
-function islandora_compound_object_islandora_derivative(AbstractObject $object = NULL, $ds_modified_params = array()) {
+function islandora_compound_object_islandora_derivative(AbstractObject $object = NULL, $ds_modified_params = []) {
   $module_path = drupal_get_path('module', 'islandora_compound_object');
   $derivatives = [];
   // Short circuit if feature is disabled.
@@ -499,44 +535,18 @@ EOQ;
 /**
  * Implements hook_menu_local_tasks_alter().
  */
-function islandora_compound_object_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+function islandora_compound_object_menu_local_tasks_alter(&$data, $route_name) {
   if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view')) {
     $valid_paths = \Drupal::moduleHandler()->invokeAll('islandora_compound_object_management_control_paths');
-    if (strpos($root_path, 'islandora/object/%') === 0) {
-      $compound_object = \Drupal::routeMatch()->getParameter('islandora_object', 2);
+    if ($route_name === 'islandora.view_object') {
+      $compound_object = \Drupal::routeMatch()->getParameter('object');
       $compound_info = islandora_compound_object_retrieve_compound_info($compound_object, TRUE);
-      if ($compound_info) {
-        if ($compound_object->id == $compound_info['parent_pid']) {
-          // We are the parent so don't repeat the label twice.
-          // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-// 
-// 
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title($compound_info['parent_label']);
-
-        }
-        else {
-          // Display both the parent and child label.
-          // @FIXME
-// drupal_set_title() has been removed. There are now a few ways to set the title
-// dynamically, depending on the situation.
-// 
-// 
-// @see https://www.drupal.org/node/2067859
-// drupal_set_title(t('@parent - @child', array(
-//             '@parent' => $compound_info['parent_label'],
-//             '@child' => $compound_info['label'],
-//           )), PASS_THROUGH);
-
-        }
-      }
+ksm ($data['tabs'][0]);
       if (isset($data['tabs'][0]['output'])) {
-        $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters();
+        $query_params = UrlHelper::filterQueryParameters();
         foreach ($data['tabs'][0]['output'] as $key => &$tab) {
           if ($tab['#link']['path'] == 'islandora/object/%/compound_count') {
-            if (in_array($root_path, $valid_paths) && !empty($compound_info)) {
+            if (in_array($route_name, $valid_paths) && !empty($compound_info)) {
               $tab['#theme'] = 'html_tag';
               $tab['#tag'] = 'span';
               $tab['#attributes'] = [
@@ -654,7 +664,10 @@ function islandora_compound_object_retrieve_compound_info(AbstractObject $object
 
     // Check if perms to show link for parent manage.
     if (islandora_object_manage_access_callback([
-      ISLANDORA_METADATA_EDIT, ISLANDORA_MANAGE_PROPERTIES, ISLANDORA_ADD_DS], $parent)) {
+      ISLANDORA_METADATA_EDIT,
+      ISLANDORA_MANAGE_PROPERTIES,
+      ISLANDORA_ADD_DS,
+    ], $parent)) {
       $parent_url = 'islandora/object/' . $parent_pid . '/manage';
     }
     else {

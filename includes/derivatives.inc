@@ -28,35 +28,35 @@ function islandora_compound_object_create_thumbnail(AbstractObject $object, $for
         islandora_compound_object_update_parent_thumbnail($object, $child);
       }
       catch (Exception $e) {
-        return array(
+        return [
           'success' => FALSE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Failed to update @dsid on @parent.'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@dsid' => 'TN',
                 '@parent' => $object->id,
-              ),
+              ],
               'type' => 'watchdog',
               'severity' => WATCHDOG_ERROR,
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
-      return array(
+      return [
         'success' => TRUE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('Updated @dsid on @parent.'),
-            'message_sub' => array(
+            'message_sub' => [
               '@dsid' => 'TN',
               '@parent' => $object->id,
-            ),
+            ],
             'type' => 'dsm',
             'severity' => 'status',
-          ),
-        ),
-      );
+          ],
+        ],
+      ];
     }
   }
 }
@@ -109,36 +109,36 @@ function islandora_compound_object_create_thumbnail_on_parent(AbstractObject $ch
         islandora_compound_object_update_parent_thumbnail($parent, $child);
       }
       catch (Exception $e) {
-        return array(
+        return [
           'success' => FALSE,
-          'messages' => array(
-            array(
+          'messages' => [
+            [
               'message' => t('Failed to update @dsid on @parent.'),
-              'message_sub' => array(
+              'message_sub' => [
                 '@dsid' => 'TN',
                 '@parent' => $parent->id,
-              ),
+              ],
               'type' => 'watchdog',
               'severity' => WATCHDOG_ERROR,
-            ),
-          ),
-        );
+            ],
+          ],
+        ];
       }
 
-      return array(
+      return [
         'success' => TRUE,
-        'messages' => array(
-          array(
+        'messages' => [
+          [
             'message' => t('Updated @dsid on @parent.'),
-            'message_sub' => array(
+            'message_sub' => [
               '@dsid' => 'TN',
               '@parent' => $parent->id,
-            ),
+            ],
             'type' => 'dsm',
             'severity' => 'status',
-          ),
-        ),
-      );
+          ],
+        ],
+      ];
     }
   }
 

@@ -2,7 +2,8 @@
 
 /**
  * @file
- * Islandora Compound Object Drush
+ * Islandora Compound Object Drush.
+ *
  * Drush statements to update a compound objects relations with children
  * from 'isPartOf' to 'isConstituentOf'.
  *
@@ -26,12 +27,12 @@ function islandora_compound_object_drush_help($section) {
  *   The drush command in an array.
  */
 function islandora_compound_object_drush_command() {
-  $items = array();
-  $items['update_rels_predicate'] = array(
+  $items = [];
+  $items['update_rels_predicate'] = [
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_LOGIN,
     'callback' => 'islandora_compound_object_setup_batch',
     'description' => dt('Update relationship predicate on compound object children from isPartOf to isConstituentOf'),
-  );
+  ];
   return $items;
 }
 
@@ -54,34 +55,32 @@ WHERE {
 }
 ORDER BY ?label
 EOQ;
-  $query = strtr($query, array(
+  $query = strtr($query, [
     '!model' => ISLANDORA_COMPOUND_OBJECT_CMODEL,
-  ));
+  ]);
 
   $results = $tuque->repository->ri->sparqlQuery($query, 'unlimited');
-  $operations = array();
+  $operations = [];
   foreach ($results as $compound_object) {
-    array_push($operations, array("islandora_compound_object_batch_set_rels_predicate",
-      array($compound_object['object']['value'], 'Setting child relationship(s) predicate from compound object: ',
-      ),
-      )
-    );
+    array_push($operations, ["islandora_compound_object_batch_set_rels_predicate",
+      [$compound_object['object']['value'], 'Setting child relationship(s) predicate from compound object: ',
+      ],
+    ]);
     // Now set up the operation to set the new predicate. In this case,
-    // fedora:isConstituentOf
-    array_push($operations, array("islandora_compound_object_batch_delete_rels_predicate",
-      array($compound_object['object']['value'], 'Deleting old child relationship(s) predicate from compound object: ',
-      ),
-      )
-    );
+    // fedora:isConstituentOf.
+    array_push($operations, ["islandora_compound_object_batch_delete_rels_predicate",
+      [$compound_object['object']['value'], 'Deleting old child relationship(s) predicate from compound object: ',
+      ],
+    ]);
   }
 
   // Construct the batch array for processing.
-  $batch = array(
+  $batch = [
     'operations' => $operations,
     'title' => t('Rels predicate update batch'),
     'finished' => 'islandora_compound_object_batch_update_rels_predicate_finished',
     'file' => drupal_get_path('module', 'islandora_compound_object') . '/includes/islandora_compound_object.drush.inc',
-  );
+  ];
 
   // Get the batch process set up.
   batch_set($batch);
@@ -100,7 +99,7 @@ EOQ;
  * @param array $context
  *   The current processing context.
  */
-function islandora_compound_object_batch_set_rels_predicate($compound_object, $operation_details, &$context) {
+function islandora_compound_object_batch_set_rels_predicate(array $compound_object, array $operation_details, array &$context) {
   $context['message'] = $operation_details . $compound_object;
   $parts = islandora_compound_object_get_parts($compound_object);
   $insert_seq = islandora_compound_object_get_insert_sequence($parts);
@@ -129,11 +128,10 @@ function islandora_compound_object_batch_set_rels_predicate($compound_object, $o
  * @param array $context
  *   Active context of the current batch.
  */
-function islandora_compound_object_batch_delete_rels_predicate($compound_object, $operation_details, &$context) {
+function islandora_compound_object_batch_delete_rels_predicate($compound_object, array $operation_details, array &$context) {
   $context['message'] = $operation_details . $compound_object;
   $parts = islandora_compound_object_get_parts($compound_object);
   foreach ($parts as $part) {
-    $escaped_pid = str_replace(':', '_', $compound_object);
     $child_object = islandora_object_load($part);
     $child_object->relationships->remove(FEDORA_RELS_EXT_URI, 'isPartOf', $compound_object);
   }
@@ -148,7 +146,7 @@ function islandora_compound_object_batch_delete_rels_predicate($compound_object,
  * @return int
  *   The position to insert the new compound object.
  */
-function islandora_compound_object_get_insert_sequence($children) {
+function islandora_compound_object_get_insert_sequence(array $children) {
   $insert_seq = 0;
   foreach ($children as $child) {
     if (!empty($child['seq']) && $child['seq'] > $insert_seq) {
@@ -170,7 +168,7 @@ function islandora_compound_object_get_insert_sequence($children) {
  * @param array $operations
  *   The batch operations performed.
  */
-function islandora_compound_object_batch_update_rels_predicate_finished($success, $results, $operations) {
+function islandora_compound_object_batch_update_rels_predicate_finished(array $success, array $results, array $operations) {
   // Print finished message to user.
   \Drupal::configFactory()->getEditable('islandora_compound_object.settings')->set('islandora_compound_object_relationship', 'isConstituentOf')->save();
   drush_print('Finished updating compound object relationship predicate(s).');

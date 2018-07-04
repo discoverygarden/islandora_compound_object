@@ -2,7 +2,7 @@
 
 /**
  * @file
- * islandora-compound-object-prev-next.tpl.php
+ * This is the template file for compound objects.
  *
  * @TODO: needs documentation about file and variables
  * $parent_label - Title of compound object
@@ -19,11 +19,15 @@
  *      'class' => array of classes for this sibling,
  *    )
  */
-
 ?>
  <div class="islandora-compound-prev-next">
  <span class="islandora-compound-title"><?php
-  print t('Part of: @parent (@count @objects)', array('@parent' => $parent_label, '@count' => $child_count, '@objects' => \Drupal::translation()->formatPlural($child_count, 'object', 'objects'))); ?>
+  print t('Part of: @parent (@count @objects)', [
+    '@parent' => $parent_label,
+    '@count' => $child_count,
+    '@objects' => \Drupal::translation()->formatPlural($child_count, 'object', 'objects')
+  ]); 
+ ?>
  <?php if ($parent_url): ?>
     <?php // @FIXME
 // l() expects a Url object, created from a route name or external URI.
@@ -95,7 +99,9 @@
 //      );
 ?>
      </div>
-   <?php endforeach; // each themed_siblings ?>
+   <?php // each themed_siblings.
+   endforeach; ?>
    </div> <!-- // islandora-compound-thumbs -->
- <?php endif; // count($themed_siblings) > 0 ?>
+ <?php // count($themed_siblings) > 0.
+ endif; ?>
  </div>
