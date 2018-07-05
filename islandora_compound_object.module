@@ -12,6 +12,8 @@
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\islandora\Controller\DefaultController;
 use Drupal\islandora\MimeDetect;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 // Constants.
 // @codingStandardsIgnoreStart
@@ -537,62 +539,44 @@ EOQ;
  */
 function islandora_compound_object_menu_local_tasks_alter(&$data, $route_name) {
   if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view')) {
-    $valid_paths = \Drupal::moduleHandler()->invokeAll('islandora_compound_object_management_control_paths');
     if ($route_name === 'islandora.view_object') {
       $compound_object = \Drupal::routeMatch()->getParameter('object');
       $compound_info = islandora_compound_object_retrieve_compound_info($compound_object, TRUE);
-ksm ($data['tabs'][0]);
-      if (isset($data['tabs'][0]['output'])) {
-        $query_params = UrlHelper::filterQueryParameters();
-        foreach ($data['tabs'][0]['output'] as $key => &$tab) {
-          if ($tab['#link']['path'] == 'islandora/object/%/compound_count') {
-            if (in_array($route_name, $valid_paths) && !empty($compound_info)) {
-              $tab['#theme'] = 'html_tag';
-              $tab['#tag'] = 'span';
+      if (isset($data['tabs'][0])) {
+        foreach ($data['tabs'][0] as $key => &$tab) {
+          if ($tab['#link']['url']->getRouteName() == 'islandora_compound_object.count') {
+            if (!empty($compound_info)) {
+              $tab['#theme'] = 'container';
               $tab['#attributes'] = [
                 'id' => 'islandora-compound-sequence-position',
               ];
-              $tab['#value'] = t('@seq of @total', [
+              $tab['#children'] = t('@seq of @total', [
                 '@seq' => $compound_info['sequence'],
                 '@total' => $compound_info['child_count'],
               ]);
             }
             else {
-              unset($data['tabs'][0]['output'][$key]);
+              unset($data['tabs'][0][$key]);
             }
           }
-          elseif ($tab['#link']['path'] == 'islandora/object/%/compound_previous') {
-            if (in_array($root_path, $valid_paths) && !empty($compound_info['previous_pid'])) {
-              $tab['#theme'] = 'link';
-              $tab['#text'] = t('Previous');
-              $tab['#path'] = "islandora/object/{$compound_info['previous_pid']}";
-              $tab['#options'] = [
-                'attributes' => [
-                  'id' => 'islandora-compound-previous-link',
-                ],
-                'html' => FALSE,
-                'query' => $query_params,
-              ];
+          elseif ($tab['#link']['url']->getRouteName() == 'islandora_compound_object.previous') {
+            if (!empty($compound_info['previous_pid'])) {
+              $tab['#theme'] = 'link_formatter_link_separate';
+              $tab['#url_title'] = t('Previous');
+              $tab['#url'] = Url::fromRoute('islandora.view_object', ['object' => $compound_info['previous_pid']]);
             }
             else {
-              unset($data['tabs'][0]['output'][$key]);
+              unset($data['tabs'][0][$key]);
             }
           }
-          elseif ($tab['#link']['path'] == 'islandora/object/%/compound_next') {
-            if (in_array($root_path, $valid_paths) && !empty($compound_info['next_pid'])) {
-              $tab['#theme'] = 'link';
-              $tab['#text'] = t('Next');
-              $tab['#path'] = "islandora/object/{$compound_info['next_pid']}";
-              $tab['#options'] = [
-                'attributes' => [
-                  'id' => 'islandora-compound-next-link',
-                ],
-                'html' => FALSE,
-                'query' => $query_params,
-              ];
+          elseif ($tab['#link']['url']->getRouteName() == 'islandora_compound_object.next') {
+            if (!empty($compound_info['next_pid'])) {
+              $tab['#theme'] = 'link_formatter_link_separate';
+              $tab['#url_title'] = t('Next');
+              $tab['#url'] = Url::fromRoute('islandora.view_object', ['object' => $compound_info['next_pid']]);
             }
             else {
-              unset($data['tabs'][0]['output'][$key]);
+              unset($data['tabs'][0][$key]);
             }
           }
         }
