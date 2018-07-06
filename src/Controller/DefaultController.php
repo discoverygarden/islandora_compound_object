@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Default controller for the islandora_compound_object module.
@@ -99,6 +100,15 @@ EOQ;
       ];
     }
     return new JsonResponse($matches);
+  }
+
+  /**
+   * Access callback for tabs that aren't tabs.
+   */
+  public static function islandoraCompoundObjectTaskAccess($object, AccountInterface $account) {
+    $object = islandora_object_load($object);
+    $perm = islandora_compound_object_task_access($object);
+    return ($perm && \Drupal::routeMatch()->getRouteName() == 'islandora.view_object') ? AccessResult::allowed() : AccessResult::forbidden();
   }
 
 }

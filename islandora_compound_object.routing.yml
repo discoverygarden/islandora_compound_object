@@ -54,7 +54,7 @@ islandora_compound_object.next:
       object:
         type: object
   requirements:
-    _islandora_object_access: 'true'
+    _custom_access: '\Drupal\islandora_compound_object\Controller\DefaultController::islandoraCompoundObjectTaskAccess'
 islandora_compound_object.previous:
   path: '/islandora/object/{object}/compound_previous'
   defaults:
@@ -65,7 +65,7 @@ islandora_compound_object.previous:
       object:
         type: object
   requirements:
-    _islandora_object_access: 'true'
+    _custom_access: '\Drupal\islandora_compound_object\Controller\DefaultController::islandoraCompoundObjectTaskAccess'
 islandora_compound_object.count:
   path: '/islandora/object/{object}/compound_count'
   defaults:
@@ -76,4 +76,4 @@ islandora_compound_object.count:
       object:
         type: object
   requirements:
-    _islandora_object_access: 'true'
+    _custom_access: '\Drupal\islandora_compound_object\Controller\DefaultController::islandoraCompoundObjectTaskAccess'
