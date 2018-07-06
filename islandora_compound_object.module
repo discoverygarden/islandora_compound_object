@@ -561,9 +561,11 @@ function islandora_compound_object_menu_local_tasks_alter(&$data, $route_name) {
           }
           elseif ($tab['#link']['url']->getRouteName() == 'islandora_compound_object.previous') {
             if (!empty($compound_info['previous_pid'])) {
-              $tab['#theme'] = 'link_formatter_link_separate';
-              $tab['#url_title'] = t('Previous');
-              $tab['#url'] = Url::fromRoute('islandora.view_object', ['object' => $compound_info['previous_pid']]);
+              $tab['#theme'] = 'container';
+              $tab['#attributes'] = [
+                'id' => 'islandora-compound-previous-link',
+              ];
+              $tab['#children'] = Link::fromTextAndUrl(t('Previous'), Url::fromRoute('islandora.view_object', ['object' => $compound_info['previous_pid']]));
             }
             else {
               unset($data['tabs'][0][$key]);
@@ -571,9 +573,11 @@ function islandora_compound_object_menu_local_tasks_alter(&$data, $route_name) {
           }
           elseif ($tab['#link']['url']->getRouteName() == 'islandora_compound_object.next') {
             if (!empty($compound_info['next_pid'])) {
-              $tab['#theme'] = 'link_formatter_link_separate';
-              $tab['#url_title'] = t('Next');
-              $tab['#url'] = Url::fromRoute('islandora.view_object', ['object' => $compound_info['next_pid']]);
+              $tab['#theme'] = 'container';
+              $tab['#attributes'] = [
+                'id' => 'islandora-compound-next-link',
+              ];
+              $tab['#children'] = Link::fromTextAndUrl(t('Next'), Url::fromRoute('islandora.view_object', ['object' => $compound_info['next_pid']]));
             }
             else {
               unset($data['tabs'][0][$key]);
