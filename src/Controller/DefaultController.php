@@ -14,20 +14,6 @@ use Drupal\Core\Access\AccessResult;
 class DefaultController extends ControllerBase {
 
   /**
-   * Access callback for compound object management.
-   */
-  public function access(AbstractObject $object, Drupal\Core\Session\AccountInterface $account) {
-    return islandora_object_access('administer compound relationships', $object);
-  }
-
-  /**
-   * Manage callback for compound object management.
-   */
-  public function manage(FedoraObject $object) {
-    return \Drupal::formBuilder()->getForm('islandora_compound_object_manage_form', $object);
-  }
-
-  /**
    * Autocomplete callback for child object search.
    *
    * @param Request $request
