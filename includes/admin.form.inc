@@ -23,7 +23,7 @@ function islandora_compound_object_admin_form_jail_validation(array $element, Fo
     $element['#value'] = 0;
     $form_state->setValue($element['#name'], $element['#value']);
     drupal_set_message(t('The <a href="@url">JAIL</a> library must be present in the libraries folder to use this display.', [
-      '@url' => \Drupal\Core\Url::fromUri('https://github.com/sebarmeli/JAIL')->toString(),
+      '@url' => Url::fromUri('https://github.com/sebarmeli/JAIL')->toString(),
     ]), 'error');
   }
 }

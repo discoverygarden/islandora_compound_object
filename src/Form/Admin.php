@@ -49,7 +49,7 @@ class Admin extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_compound_object', 'inc', 'includes/admin.form');
     $config = \Drupal::config('islandora_compound_object.settings');
     $backend_options = \Drupal::moduleHandler()->invokeAll('islandora_compound_object_query_backends');
@@ -99,13 +99,13 @@ class Admin extends ConfigFormBase {
         'visible' => [
           ':input[name="islandora_compound_object_hide_child_objects_solr"]' => [
             'checked' => TRUE,
-            ],
           ],
+        ],
         'required' => [
           ':input[name="islandora_compound_object_hide_child_objects_solr"]' => [
             'checked' => TRUE,
-            ],
           ],
+        ],
       ],
     ];
 
@@ -121,12 +121,12 @@ class Admin extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Use alternative, autoloading display for compounds?'),
       '#description' => $this->t('<b>Requires</b> <a href="@url">JAIL</a> library to be present.', [
-        '@url' => \Drupal\Core\Url::fromUri('https://github.com/sebarmeli/JAIL')->toString(),
+        '@url' => Url::fromUri('https://github.com/sebarmeli/JAIL')->toString(),
       ]),
       '#default_value' => $config->get('islandora_compound_object_use_jail_view'),
       '#element_validate' => [
         'islandora_compound_object_admin_form_jail_validation',
-        ],
+      ],
     ];
 
     $form['islandora_compound_object_tn_deriv_hooks'] = [
@@ -149,7 +149,7 @@ class Admin extends ConfigFormBase {
       '#default_value' => $config->get('islandora_compound_object_redirect_to_first'),
       '#element_validate' => [
         'islandora_compound_object_admin_form_redirect_to_first_validation',
-        ],
+      ],
     ];
 
     $form['islandora_compound_object_query_backend'] = [

@@ -16,9 +16,8 @@ class DefaultController extends ControllerBase {
   /**
    * Autocomplete callback for child object search.
    *
-   * @param Request $request
+   * @param Symfony\Component\HttpFoundation\Request $request
    *   The user supplied request containing the string being searched for.
-   *
    * @param bool $parent
    *   A flag indicating if we are to return objects usable as parents.
    */
@@ -77,7 +76,7 @@ EOQ;
     foreach ($results as $result) {
       $matches[] = [
         'value' => $this->t('@pid', [
-          '@pid' => $result['pid']['value']
+          '@pid' => $result['pid']['value'],
         ]),
         'label' => $this->t('@title (@pid)', [
           '@title' => $result['title']['value'],

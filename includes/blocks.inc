@@ -64,7 +64,7 @@ function islandora_compound_object_jail_display_block() {
 
       }
 
-      $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters();
+      $query_params = UrlHelper::filterQueryParameters();
       foreach ($compound_info['siblings_detailed'] as $sibling) {
         $path = 'islandora/object/' . $sibling['pid'] . '/datastream/TN/view';
         $class = [

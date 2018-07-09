@@ -30,11 +30,11 @@ function islandora_compound_object_get_tabledrag_element(AbstractObject $object)
       '#weight' => $seq,
       'label' => [
         '#type' => 'item',
-        '#markup' => \Drupal\Component\Utility\Html::escape($child['title']),
+        '#markup' => Html::escape($child['title']),
       ],
       'pid' => [
         '#type' => 'item',
-        '#markup' => \Drupal\Component\Utility\Html::escape($child['pid']),
+        '#markup' => Html::escape($child['pid']),
       ],
       'weight' => [
         '#type' => 'weight',
