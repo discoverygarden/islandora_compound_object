@@ -22,7 +22,7 @@ class DefaultController extends ControllerBase {
    *   A flag indicating if we are to return objects usable as parents.
    */
   public function autocomplete(Request $request, $parent = FALSE) {
-    $config = \Drupal::config('islandora_compound_object.settings');
+    $config = $this->config('islandora_compound_object.settings');
     $string = $request->query->get('q');
     $matches = [];
     $islandora_tuque = islandora_get_tuque_connection();

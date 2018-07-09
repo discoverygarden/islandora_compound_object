@@ -27,12 +27,12 @@ class Manage extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, AbstractObject $object = NULL) {
     $form_state->loadInclude('islandora_compound_object', 'inc', 'includes/manage.form');
     $form = [];
-    $config = \Drupal::config('islandora_compound_object.settings');
+    $config = $this->config('islandora_compound_object.settings');
     $form_state->set(['object'], $object);
     $rels_predicate = $config->get('islandora_compound_object_relationship');
 
     // Add child objects.
-    if ((\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children') && in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) || !\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_compound_children')) {
+    if (($config->get('islandora_compound_object_compound_children') && in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) || !$config->get('islandora_compound_object_compound_children')) {
       $form['add_children'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Add Child Objects'),
@@ -128,7 +128,7 @@ class Manage extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_compound_object', 'inc', 'includes/manage.form');
     $object = $form_state->getValue('object');
-    $create_thumbs = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
+    $create_thumbs = $this->config('islandora_compound_object.settings')->get('islandora_compound_object_thumbnail_child');
     // Relationship from child to this object.
     if (!empty($form_state->getValue('child'))) {
       $child_object = islandora_object_load($form_state->getValue('child'));
@@ -175,7 +175,7 @@ class Manage extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora', 'inc', 'includes/utilities');
-    $config = \Drupal::config('islandora_compound_object.settings');
+    $config = $this->config('islandora_compound_object.settings');
     $object = $form_state->getValue('object');
     $rels_predicate = $config->get('islandora_compound_object_relationship');
     // Child.

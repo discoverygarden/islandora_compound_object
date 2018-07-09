@@ -5,11 +5,34 @@ namespace Drupal\islandora_compound_object\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Module settings form.
  */
 class Admin extends ConfigFormBase {
+
+  protected $moduleHandler;
+
+  /**
+   * Constructor for dependency injection.
+   */
+  public function __construct(ModuleHandlerInterface $moduleHandler) {
+    $this->moduleHandler = $moduleHandler;
+  }
+
+  /**
+   * Dependency Injection.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   Injected container.
+   *
+   * @return static
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('module_handler'));
+  }
 
   /**
    * {@inheritdoc}
@@ -51,8 +74,8 @@ class Admin extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form_state->loadInclude('islandora_compound_object', 'inc', 'includes/admin.form');
-    $config = \Drupal::config('islandora_compound_object.settings');
-    $backend_options = \Drupal::moduleHandler()->invokeAll('islandora_compound_object_query_backends');
+    $config = $this->config('islandora_compound_object.settings');
+    $backend_options = $this->moduleHandler->invokeAll('islandora_compound_object_query_backends');
     $map_to_title = function ($backend) {
       return $backend['title'];
     };
