@@ -5,22 +5,10 @@
  * Theme functions.
  */
 
-use Drupal\Core\Render\Element;
-
 /**
  * Theme function for the compound navigation block parts.
  */
 function template_preprocess_islandora_compound_prev_next(array &$variables) {
-  // @FIXME
-// The Assets API has totally changed. CSS, JavaScript, and libraries are now
-// attached directly to render arrays using the #attached property.
-//
-//
-// @see https://www.drupal.org/node/2169605
-// @see https://www.drupal.org/node/2408597
-// drupal_add_js(drupal_get_path('module', 'islandora_compound_object') . '/js/caption_width.js');
-
-
   $themed_siblings = [];
   $image_path = drupal_get_path('module', 'islandora');
   $folder_image_path = "$image_path/images/folder.png";

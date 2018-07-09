@@ -28,7 +28,7 @@ function islandora_compound_object_theme($existing, $type, $theme, $path) {
   return [
     'islandora_compound_prev_next' => [
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-compound-prev-next',
+      'template' => 'islandora-compound-prev-next',
       'pattern' => 'islandora_compound_prev_next__',
       'variables' => [
         'parent_label' => NULL,
