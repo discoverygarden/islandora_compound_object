@@ -18,43 +18,34 @@
  *      'TN' => URL of thumbnail or default folder if no datastream,
  *      'class' => array of classes for this sibling,
  *    )
+ * islandora_compound_title - title for child objects:
+ *   'Part of: parent_label (child_count object(s))'
  */
 #}
 <div class="islandora-compound-prev-next">
-//WTF
-  <span class="islandora-compound-title">{{
-    ('Part of: @parent (@count @objects)', [
-      '@parent' => $parent_label,
-      '@count' => $child_count,
-      '@objects' => \Drupal::translation()->formatPlural($child_count, 'object', 'objects')
-    ])
-   |t }}
+  <span class="islandora-compound-title">
+    {{ islandora_compound_title|t }}
     {% if parent_url %}
-      {{ l(t('manage parent'), $parent_url) |t }}
+      {{ link('manage parent', parent_url)|t }}
     {% endif %}
     {% if parent_tn %}
-//WTF
+      {% set parent_tn_link_text %}
+        <img
+          src="{{ parent_tn }}"
+          alt="{{ parent_label|t }}"
+        >
+      {% endset %}
       {{
-        l(
-          theme_image(
-            array(
-              'path' => $parent_tn,
-              'attributes' => array(
-                'alt' => $parent_label,
-              ),
-            )
-          ),
-          'islandora/object/' . $parent_pid,
-          array('html' => TRUE)
-        );
+        link(parent_tn_link_text,
+          'base:islandora/object/'parent_pid
+        )
       }}
     {% endif %}
   </span><br/>
 
   {% if previous_pid is not empty %}
-//WTF
     {{
-      l(t('Previous'), 'islandora/object/' . $previous_pid);
+      link('Previous', 'base:islandora/object/'previous_pid)|t
     }}
   %}
   {% endif %}
@@ -62,41 +53,26 @@
     |
   {% endif %}
   {% if next_pid is not empty %}
-//WTF
     {{
-      l(t('Next'), 'islandora/object/' . $next_pid);
+      link('Next', 'base:islandora/object/'next_pid)|t
     }}
   {% endif %}
 
   {% if themed_siblings|length > 0) %}
-//WTF
-    <?php $query_params = \Drupal\Component\Utility\UrlHelper::filterQueryParameters(); ?>
     <div class="islandora-compound-thumbs">
     {% for sibling in themed_siblings %}
       <div class="islandora-compound-thumb">
         <span class='islandora-compound-caption'>{{ sibling.label }}</span>
-//WTF
+        {% set sibling_tn %}
+          <img
+            src="{{ sibling.TN }}"
+            class="{{ sibling.class }}"
+            title="{{ sibling.label }}"
+            alt="{{ sibling.label }}"
+          >
+        {% endset %}
         {{
-          l(
-            theme_image(
-              array(
-                'path' => $sibling['TN'],
-                'attributes' => array(
-                  'class' => $sibling['class'],
-                  'title' => $sibling['label'],
-                  'alt' => $sibling['label'],
-                ),
-              )
-            ),
-            'islandora/object/' . $sibling['pid'],
-            array(
-              'html' => TRUE,
-              'query' => $query_params,
-              'attributes' => array(
-                'title' => $sibling['label'],
-              )
-            )
-          );
+          link(sibling_tn, 'base:islandora/object/'sibling.pid)|t
         }}
       </div>
     {% endfor %}
