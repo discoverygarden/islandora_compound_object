@@ -26,7 +26,7 @@
   <span class="islandora-compound-title">
     {{ islandora_compound_title|t }}
     {% if parent_url %}
-      {{ link('manage parent', parent_url)|t }}
+      <a href="{{ path('islandora.manage_overview_object', {'object': parent_pid}) }}">{{ 'manage parent'|t }}</a>
     {% endif %}
     {% if parent_tn %}
       {% set parent_tn_link_text %}
@@ -35,34 +35,18 @@
           alt="{{ parent_label|t }}"
         >
       {% endset %}
-      {% set parent_pid_link %}
-        base:islandora/object/{{ parent_pid }}
-      {% endset %}
-      {{
-        link(parent_tn_link_text, parent_pid_link)
-      }}
+      <a href="{{ path('islandora.view_object', {'object': parent_pid}) }}">{{ parent_tn_link_text }}</a>
     {% endif %}
   </span><br/>
 
   {% if previous_pid is not empty %}
-    {% set previous_pid_link %}
-      base:islandora/object/{{ previous_pid }}
-    {% endset %}
-    {{
-      link('Previous', previous_pid_link)|t
-    }}
-  %}
+    <a href="{{ path('islandora.view_object', {'object': previous_pid}) }}">{{ 'Previous'|t }}</a>
   {% endif %}
   {% if (previous_pid is not empty) and (next_pid is not empty) %}
     |
   {% endif %}
   {% if next_pid is not empty %}
-    {% set next_pid_link %}
-      base:islandora/object/{{ next_pid }}
-    {% endset %}
-    {{
-      link('Next', next_pid_link)|t
-    }}
+    <a href="{{ path('islandora.view_object', {'object': next_pid}) }}">{{ 'Next'|t }}</a>
   {% endif %}
 
   {% if themed_siblings|length > 0 %}
@@ -78,12 +62,7 @@
             alt="{{ sibling.label }}"
           >
         {% endset %}
-        {% set sibling_pid_link %}
-          base:islandora/object/{{ sibling.pid }}
-        {% endset %}
-        {{
-          link(sibling_tn, sibling_pid_link)|t
-        }}
+        <a href="{{ path('islandora.view_object', {'object': sibling.pid}) }}">{{ sibling_tn }}</a>
       </div>
     {% endfor %}
    </div> {# islandora-compound-thumbs #}

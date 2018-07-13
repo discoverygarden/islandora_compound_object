@@ -18,3 +18,8 @@ caption_width_js:
     js/caption_width.js: {}
   dependencies:
     - core/jquery
+compound_navigation_css:
+  version: 1.x
+  css:
+    base:
+      css/islandora_compound_object.block.css: {}

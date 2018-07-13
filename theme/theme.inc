@@ -11,7 +11,6 @@ use Drupal\Core\Url;
  * Theme function for the compound navigation block parts.
  */
 function template_preprocess_islandora_compound_prev_next(array &$variables) {
-ksm($variables);
   $themed_siblings = [];
   $image_path = drupal_get_path('module', 'islandora');
   $folder_image_path = "$image_path/images/folder.png";
@@ -45,24 +44,23 @@ ksm($variables);
       }
       $sibling_object = islandora_object_load($sibling['pid']);
       if (isset($sibling_object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $sibling_object['TN'])) {
-        $sibling['TN'] = 'islandora/object/' . $sibling['pid'] . '/datastream/TN/view';
+        $sibling['TN'] = Url::fromRoute('islandora.view_datastream', ['object' => $sibling['pid'], 'datastream' => 'TN']);
       }
       else {
         // Object either does not have a thumbnail or it's restricted show a
         // default in its place.
-        $sibling['TN'] = $folder_image_path;
+        $sibling['TN'] = file_create_url($folder_image_path);
       }
       $sibling['label'] = $sibling_object->label;
       $themed_siblings[] = $sibling;
     }
   }
   $variables['themed_siblings'] = $themed_siblings;
-
   // Set value for islandora-compound-title class.
-  $variables['islandora_compound_title'] = 'fix this in theme/theme.inc';
-//t('Part of: @parent (@count @objects)', [
-//    '@parent' => $variables['parent_label'],
-//    '@count' => $variables['child_count'],
-//    '@objects' => \Drupal::translation()->formatPlural($variables['child_count'], 'object', 'objects'),
-//  ]);
+  $islandora_compound_title = t('Part of: @parent (@count @objects)', [
+    '@parent' => $variables['parent_label'],
+    '@count' => $variables['child_count'],
+    '@objects' => \Drupal::translation()->formatPlural($variables['child_count'], 'object', 'objects'),
+    ]);
+  $variables['islandora_compound_title'] = $islandora_compound_title->__toString();
 }

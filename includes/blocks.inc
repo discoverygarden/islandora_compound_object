@@ -106,7 +106,7 @@ function islandora_compound_object_jail_display_block() {
 function islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $block = [];
-  $block['#attached']['css'] = drupal_get_path('module', 'islandora_compound_object') . '/css/islandora_compound_object.block.css';
+  $block['#attached']['library'] = ['islandora_compound_object/compound_navigation_css'];
 
   $object = $object ? $object : \Drupal::routeMatch()->getParameter('object', 2);
   if ($object) {
@@ -131,12 +131,12 @@ function islandora_compound_object_navigation_block(AbstractObject $object = NUL
         '#sequence' => $compound_info['sequence'],
       ];
 
-//      $output .= \Drupal::service('renderer')->render($prev_next);
+      $output .= \Drupal::service('renderer')->render($prev_next);
     }
 
-//    if (!empty($output)) {
-//      $block['#markup'] = $output;
-//      return $block;
-//    }
+    if (!empty($output)) {
+      $block['#markup'] = $output;
+      return $block;
+    }
   }
 }
