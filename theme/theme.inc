@@ -5,13 +5,13 @@
  * Theme functions.
  */
 
-use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
  * Theme function for the compound navigation block parts.
  */
 function template_preprocess_islandora_compound_prev_next(array &$variables) {
+ksm($variables);
   $themed_siblings = [];
   $image_path = drupal_get_path('module', 'islandora');
   $folder_image_path = "$image_path/images/folder.png";
@@ -59,9 +59,10 @@ function template_preprocess_islandora_compound_prev_next(array &$variables) {
   $variables['themed_siblings'] = $themed_siblings;
 
   // Set value for islandora-compound-title class.
-  $variables['islandora_compound_title'] = t('Part of: @parent (@count @objects)', [
-      '@parent' => $variables['parent_label'],
-      '@count' => $variables['child_count'],
-      '@objects' => \Drupal::translation()->formatPlural($variables['child_count'], 'object', 'objects'),
-    ]);
+  $variables['islandora_compound_title'] = 'fix this in theme/theme.inc';
+//t('Part of: @parent (@count @objects)', [
+//    '@parent' => $variables['parent_label'],
+//    '@count' => $variables['child_count'],
+//    '@objects' => \Drupal::translation()->formatPlural($variables['child_count'], 'object', 'objects'),
+//  ]);
 }

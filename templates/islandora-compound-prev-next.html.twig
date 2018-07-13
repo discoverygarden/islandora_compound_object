@@ -35,17 +35,21 @@
           alt="{{ parent_label|t }}"
         >
       {% endset %}
+      {% set parent_pid_link %}
+        base:islandora/object/{{ parent_pid }}
+      {% endset %}
       {{
-        link(parent_tn_link_text,
-          'base:islandora/object/'parent_pid
-        )
+        link(parent_tn_link_text, parent_pid_link)
       }}
     {% endif %}
   </span><br/>
 
   {% if previous_pid is not empty %}
+    {% set previous_pid_link %}
+      base:islandora/object/{{ previous_pid }}
+    {% endset %}
     {{
-      link('Previous', 'base:islandora/object/'previous_pid)|t
+      link('Previous', previous_pid_link)|t
     }}
   %}
   {% endif %}
@@ -53,12 +57,15 @@
     |
   {% endif %}
   {% if next_pid is not empty %}
+    {% set next_pid_link %}
+      base:islandora/object/{{ next_pid }}
+    {% endset %}
     {{
-      link('Next', 'base:islandora/object/'next_pid)|t
+      link('Next', next_pid_link)|t
     }}
   {% endif %}
 
-  {% if themed_siblings|length > 0) %}
+  {% if themed_siblings|length > 0 %}
     <div class="islandora-compound-thumbs">
     {% for sibling in themed_siblings %}
       <div class="islandora-compound-thumb">
@@ -71,8 +78,11 @@
             alt="{{ sibling.label }}"
           >
         {% endset %}
+        {% set sibling_pid_link %}
+          base:islandora/object/{{ sibling.pid }}
+        {% endset %}
         {{
-          link(sibling_tn, 'base:islandora/object/'sibling.pid)|t
+          link(sibling_tn, sibling_pid_link)|t
         }}
       </div>
     {% endfor %}

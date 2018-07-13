@@ -1,0 +1,20 @@
+jail:
+  version: 1.x
+  js: {}
+compound_jail:
+  version: 1.x
+  js:
+    js/compound_jail.js: {}
+  css:
+    base:
+      css/islandora_compound_object.jail_block.css: {}
+  dependencies:
+    - islandora_compound_object/jail
+    - core/drupal
+    - core/drupalSettings
+caption_width_js:
+  version: 1.x
+  js:
+    js/caption_width.js: {}
+  dependencies:
+    - core/jquery
