@@ -51,6 +51,14 @@ function islandora_compound_object_jail_display_block() {
         if ($sibling['pid'] == $compound_info['current_pid']) {
           $class[] = 'islandora-compound-object-jail-active';
         }
+        // XXX: In order to get the noscript tags to work, we make the image
+        // element first. There should be a cleaner way to do this.
+        $image_noscript = [
+          '#theme' => 'image',
+          '#uri' => Url::fromRoute('islandora.view_datastream_view', ['object' => $sibling['pid'], 'datastream' => 'TN'])->toString(),
+        ];
+        $rendered_image_noscript = drupal_render($image_noscript);
+
         $img = array(
           'image' => array(
             '#theme' => 'image',
@@ -61,16 +69,24 @@ function islandora_compound_object_jail_display_block() {
             ),
           ),
           'noscript' => [
-            '#theme' => 'image',
-            '#uri' => Url::fromRoute('islandora.view_datastream_view', ['object' => $sibling['pid'], 'datastream' => 'TN'])->toString(),
-            '#prefix' => '<noscript>',
-            '#suffix' => '</noscript>',
+            '#type' => 'html_tag',
+            '#tag' => 'noscript',
+            '#value' => $rendered_image_noscript,
           ],
         );
         $block[$sibling['pid']] = [
           '#type' => 'container',
           '#attributes' => [],
-          '#children' => drupal_render($img),
+          'link' => [
+            '#type' => 'link',
+            '#title' => $sibling['title'],
+            '#url' => Url::fromRoute('islandora.view_object', ['object' => $sibling['pid']]),
+          ],
+          'content' => [
+            '#type' => 'link',
+            '#title' => drupal_render($img),
+            '#url' => Url::fromRoute('islandora.view_object', ['object' => $sibling['pid']]),
+          ],
         ];
       }
     }
