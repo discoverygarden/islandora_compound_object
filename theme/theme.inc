@@ -61,6 +61,6 @@ function template_preprocess_islandora_compound_prev_next(array &$variables) {
     '@parent' => $variables['parent_label'],
     '@count' => $variables['child_count'],
     '@objects' => \Drupal::translation()->formatPlural($variables['child_count'], 'object', 'objects'),
-    ]);
+  ]);
   $variables['islandora_compound_title'] = $islandora_compound_title->__toString();
 }

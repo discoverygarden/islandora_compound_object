@@ -5,9 +5,7 @@
  * Holds block definitions for the compound solution pack.
  */
 
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
 
 /**
  * Constructs the JAIL display block for a compound.
@@ -22,7 +20,6 @@ function islandora_compound_object_jail_display_block() {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     if (!empty($compound_info)) {
       $module_path = drupal_get_path('module', 'islandora_compound_object');
-      $jail_path = libraries_get_path('JAIL');
       $block['#attached']['library'] = ['islandora_compound_object/jail'];
       $block['#attached']['library'] = ['islandora_compound_object/compound_jail'];
       $block['#attached']['drupalSettings']['islandora_compound_object']['image_path'] = file_create_url(drupal_get_path('module', 'islandora') . '/images/folder.png');
@@ -36,15 +33,14 @@ function islandora_compound_object_jail_display_block() {
       ];
       $manage_link = \Drupal::request()->getSchemeAndHttpHost() . '/' . $compound_info['parent_url'];
       if ($compound_info['parent_url']) {
-        $block['manage_link'] = array(
+        $block['manage_link'] = [
           '#type' => 'item',
           '#markup' => '<a href=' . $manage_link . '>' . t('manage parent') . '</a>',
-        );
+        ];
 
       }
 
       foreach ($compound_info['siblings_detailed'] as $sibling) {
-        $path = 'islandora/object/' . $sibling['pid'] . '/datastream/TN/view';
         $class = [
           'islandora-compound-object-jail',
         ];
@@ -59,21 +55,21 @@ function islandora_compound_object_jail_display_block() {
         ];
         $rendered_image_noscript = drupal_render($image_noscript);
 
-        $img = array(
-          'image' => array(
+        $img = [
+          'image' => [
             '#theme' => 'image',
             '#uri' => file_create_url("$module_path/images/loader.png"),
-            '#attributes' => array(
+            '#attributes' => [
               'class' => $class,
               'data-src' => Url::fromRoute('islandora.view_datastream_view', ['object' => $sibling['pid'], 'datastream' => 'TN'])->toString(),
-            ),
-          ),
+            ],
+          ],
           'noscript' => [
             '#type' => 'html_tag',
             '#tag' => 'noscript',
             '#value' => $rendered_image_noscript,
           ],
-        );
+        ];
         $block[$sibling['pid']] = [
           '#type' => 'container',
           '#attributes' => [],
@@ -111,7 +107,7 @@ function islandora_compound_object_navigation_block(AbstractObject $object = NUL
   $object = $object ? $object : \Drupal::routeMatch()->getParameter('object', 2);
   if ($object) {
     $output = '';
-    $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE); 
+    $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     // This object is part of a compound object.
     if (!empty($compound_info)) {
       // XXX: The theme processing requires '#'s. There should be a better way.

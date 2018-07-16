@@ -31,7 +31,7 @@ class JailDisplay extends BlockBase {
    * {@inheritdoc}
    */
   public function blockAccess(AccountInterface $account) {
-    if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view')) {
+    if ($this->config('islandora_compound_object.settings')->get('islandora_compound_object_use_jail_view')) {
       return AccessResult::allowed();
     }
     else {
