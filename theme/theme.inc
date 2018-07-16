@@ -38,9 +38,9 @@ function template_preprocess_islandora_compound_prev_next(array &$variables) {
     for ($i = 0; $i < count($variables['siblings']); $i += 1) {
       $sibling = [];
       $sibling['pid'] = $variables['siblings'][$i];
-      $sibling['class'] = [];
+      $sibling['class'] = '';
       if ($sibling['pid'] === $variables['pid']) {
-        $sibling['class'][] = 'active';
+        $sibling['class'] = 'active';
       }
       $sibling_object = islandora_object_load($sibling['pid']);
       if (isset($sibling_object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $sibling_object['TN'])) {
