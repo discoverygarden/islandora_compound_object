@@ -9,11 +9,11 @@
  * Hook implementations and general functions.
  */
 
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\islandora\Controller\DefaultController;
 use Drupal\islandora\MimeDetect;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 // Constants.
 // @codingStandardsIgnoreStart
@@ -147,11 +147,15 @@ function islandora_compound_object_islandora_compoundcmodel_islandora_view_objec
     if ($first_child_id != $object->id) {
       if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_redirect_to_first')) {
         // Redirect to the first child of a compound.
-        $redirect_path = 'islandora/object/' . $first_child_id;
-        $options = [];
-        $options['query'] = UrlHelper::filterQueryParameters();
-
-        drupal_goto($redirect_path, $options);
+        $redirect_path = Url::fromRoute('islandora.view_object', ['object' => $first_child_id]);
+        $response = new RedirectResponse($redirect_path);
+        $request = \Drupal::request();
+        // Save the session so things like messages get saved.
+        $request->getSession()->save();
+        $response->prepare($request);
+        // Make sure to trigger kernel events.
+        \Drupal::service('kernel')->terminate($request, $response);
+        $response->send();
       }
       else {
         // Get view of first child.

@@ -92,14 +92,14 @@ EOQ;
 /**
  * Set the rels_predicate of the compound object member.
  *
- * @param array $compound_object
+ * @param string $compound_object
  *   The PID of the compound object.
- * @param array $operation_details
+ * @param string $operation_details
  *   The status message to for this context.
- * @param array $context
+ * @param DrushBatchContext $context
  *   The current processing context.
  */
-function islandora_compound_object_batch_set_rels_predicate(array $compound_object, array $operation_details, array &$context) {
+function islandora_compound_object_batch_set_rels_predicate($compound_object, $operation_details, DrushBatchContext &$context) {
   $context['message'] = $operation_details . $compound_object;
   $parts = islandora_compound_object_get_parts($compound_object);
   $insert_seq = islandora_compound_object_get_insert_sequence($parts);
@@ -123,12 +123,12 @@ function islandora_compound_object_batch_set_rels_predicate(array $compound_obje
  *
  * @param string $compound_object
  *   The AbstractFedoraObject pid.
- * @param array $operation_details
+ * @param string $operation_details
  *   Details of current operation being processed.
- * @param array $context
+ * @param DrushBatchContext $context
  *   Active context of the current batch.
  */
-function islandora_compound_object_batch_delete_rels_predicate($compound_object, array $operation_details, array &$context) {
+function islandora_compound_object_batch_delete_rels_predicate($compound_object, $operation_details, DrushBatchContext &$context) {
   $context['message'] = $operation_details . $compound_object;
   $parts = islandora_compound_object_get_parts($compound_object);
   foreach ($parts as $part) {
@@ -161,14 +161,14 @@ function islandora_compound_object_get_insert_sequence(array $children) {
 /**
  * Batch process complete handler.
  *
- * @param array $success
+ * @param bool $success
  *   The batch status success message.
  * @param array $results
  *   The batch staus result.
  * @param array $operations
  *   The batch operations performed.
  */
-function islandora_compound_object_batch_update_rels_predicate_finished(array $success, array $results, array $operations) {
+function islandora_compound_object_batch_update_rels_predicate_finished($success, array $results, array $operations) {
   // Print finished message to user.
   \Drupal::configFactory()->getEditable('islandora_compound_object.settings')->set('islandora_compound_object_relationship', 'isConstituentOf')->save();
   drush_print('Finished updating compound object relationship predicate(s).');
