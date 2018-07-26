@@ -147,7 +147,7 @@ function islandora_compound_object_islandora_compoundcmodel_islandora_view_objec
     if ($first_child_id != $object->id) {
       if (\Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_redirect_to_first')) {
         // Redirect to the first child of a compound.
-        $redirect_path = Url::fromRoute('islandora.view_object', ['object' => $first_child_id]);
+        $redirect_path = Url::fromRoute('islandora.view_object', ['object' => $first_child_id])->toString();
         $response = new RedirectResponse($redirect_path);
         $request = \Drupal::request();
         // Save the session so things like messages get saved.
