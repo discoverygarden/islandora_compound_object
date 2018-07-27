@@ -169,12 +169,12 @@ function islandora_compound_object_build_sequence_operations($parent_pid, array 
  *
  * @param string $parent_pid
  *   The pid of the parent object.
- * @param array $child_pid
+ * @param string $child_pid
  *   The pid of the child object.
  * @param array $context
  *   Context used in the batch.
  */
-function islandora_compound_object_update_sequence($parent_pid, array $child_pid, $start_seq, array &$context) {
+function islandora_compound_object_update_sequence($parent_pid, $child_pid, $start_seq, array &$context) {
   $escaped_pid = str_replace(':', '_', $parent_pid);
   $child_object = islandora_object_load($child_pid);
   $child_object->relationships->remove(ISLANDORA_RELS_EXT_URI, "isSequenceNumberOf$escaped_pid");
