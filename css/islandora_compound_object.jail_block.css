@@ -1,6 +1,6 @@
 /* Display in Content Region */
 
-#block-islandora-compound-object-compound-jail-display {
+#block-islandoracompoundobjectjaildisplay {
   height: 200px;
   width: 100%;
   overflow-x: hidden;
@@ -8,21 +8,21 @@
   overflow: -moz-scrollbars-vertical;
   font-size: 90%;
 }
-#block-islandora-compound-object-compound-jail-display > div {
+#block-islandoracompoundobjectjaildisplay > div {
   border-bottom: 1px dotted #ccc;
   padding-bottom: 1em;
   padding-right: 10px;
 }
-#block-islandora-compound-object-compound-jail-display a {
+#block-islandoracompoundobjectjaildisplay a {
   display: block;
 }
-#block-islandora-compound-object-compound-jail-display .content a {
+#block-islandoracompoundobjectjaildisplay .content a {
   display: inline-block;
   max-width: 20%;
   vertical-align: top;
   line-height: 1.25em;
 }
-#block-islandora-compound-object-compound-jail-display .content img {
+#block-islandoracompoundobjectjaildisplay .content img {
   margin: 0.5em 0.5em 1em 0;
   max-width: 70%;
   border-bottom: 1px dotted #ccc;
@@ -31,35 +31,35 @@
 
 /* Display in Sidebar Region */
 
-.sidebar #block-islandora-compound-object-compound-jail-display {
+.sidebar #block-islandoracompoundobjectjaildisplay {
   height: 100%;
   width: auto;
   min-height: 400px;
   max-height: 1100px;
 }
-.sidebar #block-islandora-compound-object-compound-jail-display .content img {
+.sidebar #block-islandoracompoundobjectjaildisplay .content img {
   width: 100%;
   max-width: 85%;
 }
-.sidebar #block-islandora-compound-object-compound-jail-display .content a {
+.sidebar #block-islandoracompoundobjectjaildisplay .content a {
   display: inline-block;
   max-width: 100%;
 }
 
 /* Shared */
 
-#block-islandora-compound-object-compound-jail-display .form-type-item:first-child {
+#block-islandoracompoundobjectjaildisplay .form-type-item:first-child {
   margin: 0;
   font-size: 100%;
   font-weight: bold;
 }
 
-#block-islandora-compound-object-compound-jail-display .form-type-item:nth-child(2) {
+#block-islandoracompoundobjectjaildisplay .form-type-item:nth-child(2) {
   border-bottom: 1px solid #ccc;
   padding-bottom: 0.5em;
 }
 
-html:not(.js) #block-islandora-compound-object-compound-jail-display img.islandora-compound-object-jail {
+html:not(.js) #block-islandoracompoundobjectjaildisplay img.islandora-compound-object-jail {
   display: none;
 }
 
