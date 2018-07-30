@@ -90,10 +90,19 @@ EOQ;
   /**
    * Access callback for tabs that aren't tabs.
    */
-  public static function islandoraCompoundObjectTaskAccess($object, AccountInterface $account) {
+  public static function islandoraCompoundObjectTaskAccess(AbstractObject $object, AccountInterface $account) {
     $object = islandora_object_load($object);
     $perm = islandora_compound_object_task_access($object);
     return ($perm && \Drupal::routeMatch()->getRouteName() == 'islandora.view_object') ? AccessResult::allowed() : AccessResult::forbidden();
+  }
+
+  /**
+   * Access callback for compound object management.
+   */
+  public static function islandoraCompoundObjectAccess(AbstractObject $object) {
+    $object = islandora_object_load($object);
+    $perm = islandora_compound_object_access($object);
+    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
   }
 
 }

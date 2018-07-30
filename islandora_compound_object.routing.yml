@@ -4,17 +4,15 @@ islandora_compound_object.admin:
     _title: 'Compound Object Solution Pack'
     _form: '\Drupal\islandora_compound_object\Form\Admin'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer compound relationships'
 islandora_compound_object.manage:
   path: '/islandora/object/{object}/manage/compound'
   defaults:
-    perms: 'administer compound relationships'
     _title: 'Compound'
     _form: '\Drupal\islandora_compound_object\Form\Manage'
   requirements:
-    _islandora_object_access: 'true'
+    _custom_access: '\Drupal\islandora_compound_object\Controller\DefaultController::islandoraCompoundObjectAccess'
   options:
-    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -25,7 +23,6 @@ islandora_compound_object.autocomplete_child:
     _controller: '\Drupal\islandora_compound_object\Controller\DefaultController::autocomplete'
     parent: false
   options:
-    _admin_route: true
     parameters:
       object:
         type: object
@@ -38,7 +35,6 @@ islandora_compound_object.autocomplete_parent:
     _controller: '\Drupal\islandora_compound_object\Controller\DefaultController::autocomplete'
     parent: true
   options:
-    _admin_route: true
     parameters:
       object:
         type: object
@@ -47,7 +43,6 @@ islandora_compound_object.autocomplete_parent:
 islandora_compound_object.next:
   path: '/islandora/object/{object}/compound_next'
   defaults:
-    perms: 'administer compound relationships'
     _title: 'Compound Next'
     options:
     parameters:
@@ -58,7 +53,6 @@ islandora_compound_object.next:
 islandora_compound_object.previous:
   path: '/islandora/object/{object}/compound_previous'
   defaults:
-    perms: 'administer compound relationships'
     _title: 'Compound Previous'
     options:
     parameters:
@@ -69,7 +63,6 @@ islandora_compound_object.previous:
 islandora_compound_object.count:
   path: '/islandora/object/{object}/compound_count'
   defaults:
-    perms: 'administer compound relationships'
     _title: 'Compound Count'
   options:
     parameters:
