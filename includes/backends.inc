@@ -72,15 +72,15 @@ function islandora_compound_object_query_sparql($pid) {
 
   // Handle XACML restrictions in query.
   $user = \Drupal::currentUser();
-  if ($user->uid === 0) {
+  if ($user->id() === 0) {
     $user_name = 'anonymous';
   }
   else {
-    $user_name = $user->name;
+    $user_name = $user->getAccountName();
   }
 
   $role_matches = [];
-  foreach ($user->roles as $role) {
+  foreach ($user->getRoles() as $role) {
     $role_matches[] = "?role='{$role}'";
   }
   $role_matcher = implode(' || ', $role_matches);
