@@ -5,6 +5,8 @@
  * Holds derivative functionality for compound solution pack.
  */
 
+use Drupal\Core\Logger\RfcLogLevel;
+
 /**
  * Derivative creation function for compound parent object TN.
  *
@@ -37,8 +39,8 @@ function islandora_compound_object_create_thumbnail(AbstractObject $object, $for
                 '@dsid' => 'TN',
                 '@parent' => $object->id,
               ],
-              'type' => 'watchdog',
-              'severity' => WATCHDOG_ERROR,
+              'type' => 'log',
+              'severity' => RfcLogLevel::ERROR,
             ],
           ],
         ];
@@ -118,8 +120,8 @@ function islandora_compound_object_create_thumbnail_on_parent(AbstractObject $ch
                 '@dsid' => 'TN',
                 '@parent' => $parent->id,
               ],
-              'type' => 'watchdog',
-              'severity' => WATCHDOG_ERROR,
+              'type' => 'log',
+              'severity' => RfcLogLevel::ERROR,
             ],
           ],
         ];
