@@ -80,7 +80,9 @@ function islandora_compound_object_query_sparql($pid) {
   }
 
   $role_matches = [];
-  foreach ($user->getRoles() as $role) {
+  foreach (user_roles($user->getRoles()) as $role_object) {
+    $role = $role_object->get('label');
+
     $role_matches[] = "?role='{$role}'";
   }
   $role_matcher = implode(' || ', $role_matches);
