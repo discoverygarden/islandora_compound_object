@@ -96,10 +96,10 @@ EOQ;
  *   The PID of the compound object.
  * @param string $operation_details
  *   The status message to for this context.
- * @param DrushBatchContext $context
+ * @param DrushBatchContext|array $context
  *   The current processing context.
  */
-function islandora_compound_object_batch_set_rels_predicate($compound_object, $operation_details, DrushBatchContext &$context) {
+function islandora_compound_object_batch_set_rels_predicate($compound_object, $operation_details, &$context) {
   $context['message'] = $operation_details . $compound_object;
   $parts = islandora_compound_object_get_parts($compound_object);
   $insert_seq = islandora_compound_object_get_insert_sequence($parts);
@@ -125,10 +125,10 @@ function islandora_compound_object_batch_set_rels_predicate($compound_object, $o
  *   The AbstractFedoraObject pid.
  * @param string $operation_details
  *   Details of current operation being processed.
- * @param DrushBatchContext $context
+ * @param DrushBatchContext|array $context
  *   Active context of the current batch.
  */
-function islandora_compound_object_batch_delete_rels_predicate($compound_object, $operation_details, DrushBatchContext &$context) {
+function islandora_compound_object_batch_delete_rels_predicate($compound_object, $operation_details, &$context) {
   $context['message'] = $operation_details . $compound_object;
   $parts = islandora_compound_object_get_parts($compound_object);
   foreach ($parts as $part) {
