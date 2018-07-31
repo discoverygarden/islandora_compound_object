@@ -5,6 +5,8 @@ islandora_compound_object.admin:
     _form: '\Drupal\islandora_compound_object\Form\Admin'
   requirements:
     _permission: 'administer compound relationships'
+  options:
+    _admin_route: TRUE
 islandora_compound_object.manage:
   path: '/islandora/object/{object}/manage/compound'
   defaults:
@@ -13,6 +15,7 @@ islandora_compound_object.manage:
   requirements:
     _custom_access: '\Drupal\islandora_compound_object\Controller\DefaultController::islandoraCompoundObjectAccess'
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -23,6 +26,7 @@ islandora_compound_object.autocomplete_child:
     _controller: '\Drupal\islandora_compound_object\Controller\DefaultController::autocomplete'
     parent: false
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
@@ -35,6 +39,7 @@ islandora_compound_object.autocomplete_parent:
     _controller: '\Drupal\islandora_compound_object\Controller\DefaultController::autocomplete'
     parent: true
   options:
+    _admin_route: TRUE
     parameters:
       object:
         type: object
