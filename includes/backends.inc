@@ -9,8 +9,8 @@
  * Implements callback_islandora_compound_object_query_backends().
  */
 function islandora_compound_object_legacy_query_sparql($pid) {
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
-  $objects = array();
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
+  $objects = [];
 
   $connection = islandora_get_tuque_connection();
   $escaped_pid = str_replace(':', '_', $pid);
@@ -30,7 +30,7 @@ EOQ;
     $results = $connection->repository->ri->sparqlQuery($query);
 
     // Sort the objects into their proper order.
-    $sort = function($a, $b) {
+    $sort = function ($a, $b) {
       $a = $a['seq']['value'];
       $b = $b['seq']['value'];
       if ($a === $b) {
@@ -49,11 +49,11 @@ EOQ;
     foreach ($results as $result) {
       $object = islandora_object_load($result['object']['value']);
       if (islandora_object_access(ISLANDORA_VIEW_OBJECTS, $object)) {
-        $objects[$result['object']['value']] = array(
+        $objects[$result['object']['value']] = [
           'pid' => $result['object']['value'],
           'title' => $result['title']['value'],
           'seq' => $result['seq']['value'],
-        );
+        ];
       }
     }
   }
@@ -67,31 +67,36 @@ EOQ;
 function islandora_compound_object_query_sparql($pid) {
   module_load_include('inc', 'islandora', 'includes/utilities');
 
-  $rels_predicate = variable_get('islandora_compound_object_relationship', 'isConstituentOf');
-  $objects = array();
+  $rels_predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
+  $objects = [];
 
   // Handle XACML restrictions in query.
-  global $user;
-  if ($user->uid === 0) {
+  $user = \Drupal::currentUser();
+  if ($user->id() === 0) {
     $user_name = 'anonymous';
   }
   else {
-    $user_name = $user->name;
+    $user_name = $user->getAccountName();
   }
 
-  $role_matches = array();
-  foreach ($user->roles as $role) {
+  $role_matches = [];
+  $all_roles = user_roles();
+  foreach ($user->getRoles() as $rid) {
+    $role_object = $all_roles[$rid];
+    $role = $role_object->get('label');
+
     $role_matches[] = "?role='{$role}'";
   }
   $role_matcher = implode(' || ', $role_matches);
 
   // Handle namespace restrictions in query.
-  $enforced = variable_get('islandora_namespace_restriction_enforced', FALSE);
+  $enforced = \Drupal::config('islandora.settings')->get('islandora_namespace_restriction_enforced');
+
   $namespace_filter = '';
   if ($enforced) {
     $namespace_array = islandora_get_allowed_namespaces();
     $namespace_sparql = implode('|', $namespace_array);
-    $namespace_filter = format_string('FILTER(regex(str(?object), "info:fedora/(!namespaces):"))', array('!namespaces' => $namespace_sparql));
+    $namespace_filter = strtr('FILTER(regex(str(?object), "info:fedora/(!namespaces):"))', ['!namespaces' => $namespace_sparql]);
   }
 
   $escaped_pid = str_replace(':', '_', $pid);
@@ -117,14 +122,14 @@ ORDER BY ASC(?seq)
 EOQ;
 
   $connection = islandora_get_tuque_connection();
-  $results = $connection ? $connection->repository->ri->sparqlQuery($query) : array();
+  $results = $connection ? $connection->repository->ri->sparqlQuery($query) : [];
 
   foreach ($results as $result) {
-    $objects[$result['object']['value']] = array(
+    $objects[$result['object']['value']] = [
       'pid' => $result['object']['value'],
       'title' => $result['title']['value'],
       'seq' => $result['seq']['value'],
-    );
+    ];
   }
 
   return $objects;

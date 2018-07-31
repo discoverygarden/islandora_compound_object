@@ -1,0 +1,16 @@
+islandora_compound_object.manage:
+  route_name: islandora_compound_object.manage
+  title: Compound
+  parent_id: islandora.manage_overview_object
+islandora_compound_object.next:
+  route_name: islandora_compound_object.next
+  title: Compound Next
+  base_route: islandora.view_object
+islandora_compound_object.previous:
+  route_name: islandora_compound_object.previous
+  title: Compound Previous
+  base_route: islandora.view_object
+islandora_compound_object.count:
+  route_name: islandora_compound_object.count
+  title: Compound Count
+  base_route: islandora.view_object

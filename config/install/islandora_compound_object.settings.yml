@@ -1,0 +1,11 @@
+islandora_compound_object_compound_children: true
+islandora_compound_object_thumbnail_child: true
+islandora_compound_object_hide_child_objects_ri: true
+islandora_compound_object_hide_child_objects_solr: true
+islandora_compound_object_solr_fq: '-RELS_EXT_isConstituentOf_uri_mt:[* TO *]'
+islandora_compound_object_relationship: 'isConstituentOf'
+islandora_compound_object_use_jail_view: false
+islandora_compound_object_tn_deriv_hooks: false
+islandora_compound_object_show_compound_parents_in_breadcrumbs: false
+islandora_compound_object_redirect_to_first: false
+islandora_compound_object_query_backend: 'islandora_compound_object_legacy_sparql'

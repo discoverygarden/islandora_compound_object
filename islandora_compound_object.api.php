@@ -14,7 +14,7 @@
  *   An array of PIDs representing the parents to which each object was added,
  *   to make each member of $objects a member of multiple compounds.
  */
-function hook_islandora_compound_object_children_added_to_parent($objects, $parent_pids) {
+function hook_islandora_compound_object_children_added_to_parent(array $objects, array $parent_pids) {
 
 }
 
@@ -27,7 +27,7 @@ function hook_islandora_compound_object_children_added_to_parent($objects, $pare
  *   An array of PIDs representing the parents to which each object was added,
  *   to make each member of $objects a member of multiple compounds.
  */
-function hook_islandora_compound_object_children_removed_from_parent($object, $parent_pids) {
+function hook_islandora_compound_object_children_removed_from_parent(array $object, array $parent_pids) {
 
 }
 
@@ -35,9 +35,9 @@ function hook_islandora_compound_object_children_removed_from_parent($object, $p
  * Registry menu paths for the management controls for compound to appear on.
  */
 function hook_islandora_compound_object_management_control_paths() {
-  return array(
+  return [
     'islandora/object/%/your/menu/path/here',
-  );
+  ];
 }
 
 /**
@@ -58,14 +58,14 @@ function hook_islandora_compound_object_management_control_paths() {
  */
 function hook_islandora_compound_object_query_backends() {
   $a_callable = function ($pid, $ret_title) {
-    // Do something to get the total number of objects
+    // Do something to get the total number of objects.
   };
-  return array(
-    'awesome_backend' => array(
+  return [
+    'awesome_backend' => [
       'title' => t('Awesome Backend'),
       'callable' => $a_callable,
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -73,7 +73,7 @@ function hook_islandora_compound_object_query_backends() {
  *
  * Callback for hook_islandora_compound_object_query_backends().
  *
- * @param String $pid
+ * @param string $pid
  *   A compound object for which to obtain members.
  *
  * @return array
@@ -85,11 +85,11 @@ function hook_islandora_compound_object_query_backends() {
  *   - seq: The sequence number of the object.
  */
 function callback_islandora_compound_object_get_parts($pid) {
-  return array(
-    'islandora:123' => array(
-        'pid' => 'islandora:123',
-        'title' => 'objects title',
-        'seq' => 60,
-    ),
-  );
+  return [
+    'islandora:123' => [
+      'pid' => 'islandora:123',
+      'title' => 'objects title',
+      'seq' => 60,
+    ],
+  ];
 }

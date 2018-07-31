@@ -1,0 +1,26 @@
+islandora_compound_object.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    islandora_compound_object_compound_children:
+      type: boolean
+    islandora_compound_object_thumbnail_child:
+      type: boolean
+    islandora_compound_object_hide_child_objects_ri:
+      type: boolean
+    islandora_compound_object_hide_child_objects_solr:
+      type: boolean
+    islandora_compound_object_solr_fq:
+      type: string
+    islandora_compound_object_relationship:
+      type: string
+    islandora_compound_object_use_jail_view:
+      type: boolean
+    islandora_compound_object_tn_deriv_hooks:
+      type: boolean
+    islandora_compound_object_show_compound_parents_in_breadcrumbs:
+      type: boolean
+    islandora_compound_object_redirect_to_first:
+      type: boolean
+    islandora_compound_object_query_backend:
+      type: string

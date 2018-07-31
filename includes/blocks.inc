@@ -5,6 +5,8 @@
  * Holds block definitions for the compound solution pack.
  */
 
+use Drupal\Core\Url;
+
 /**
  * Constructs the JAIL display block for a compound.
  *
@@ -12,96 +14,76 @@
  *   Renderable array for the block.
  */
 function islandora_compound_object_jail_display_block() {
-  $block = array();
-  $object = menu_get_object('islandora_object', 2);
+  $block = [];
+  $object = \Drupal::routeMatch()->getParameter('object', 2);
   if ($object) {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     if (!empty($compound_info)) {
       $module_path = drupal_get_path('module', 'islandora_compound_object');
-      $jail_path = libraries_get_path('JAIL');
-      $block['#attached']['js'] = array(
-        "$jail_path/lib/jquery.js" => array(
-          'group' => JS_LIBRARY,
-        ),
-        "$jail_path/dist/jail.min.js" => array(
-          'group' => JS_LIBRARY,
-        ),
-        "$module_path/js/compound_jail.js" => array(
-          'group' => JS_LIBRARY,
-        ),
-      );
-      $block['#attached']['js'][] = array(
-        'data' => array(
-          'islandora_compound_object' => array(
-            'image_path' => url(drupal_get_path('module', 'islandora') . '/images/folder.png'),
-          ),
-        ),
-        'type' => 'setting',
-      );
-      $block['#attached']['css'] = array(
-        "$module_path/css/islandora_compound_object.jail_block.css",
-      );
-      $block['part_title'] = array(
+      $block['#attached']['library'] = ['islandora_compound_object/jail'];
+      $block['#attached']['library'] = ['islandora_compound_object/compound_jail'];
+      $block['#attached']['drupalSettings']['islandora_compound_object']['image_path'] = file_create_url(drupal_get_path('module', 'islandora') . '/images/folder.png');
+      $block['part_title'] = [
         '#type' => 'item',
-        '#markup' => t('Part of: @label (@count @obj)', array(
+        '#markup' => t('Part of: @label (@count @obj)', [
           '@label' => $compound_info['parent_label'],
           '@count' => $compound_info['child_count'],
-          '@obj' => format_plural($compound_info['child_count'], 'object', 'objects'),
-        )),
-      );
+          '@obj' => \Drupal::translation()->formatPlural($compound_info['child_count'], 'object', 'objects'),
+        ]),
+      ];
+      $manage_link = \Drupal::request()->getSchemeAndHttpHost() . '/' . $compound_info['parent_url'];
       if ($compound_info['parent_url']) {
-        $block['manage_link'] = array(
+        $block['manage_link'] = [
           '#type' => 'item',
-          '#markup' => l(t('manage parent'), $compound_info['parent_url']),
-        );
+          '#markup' => '<a href=' . $manage_link . '>' . t('manage parent') . '</a>',
+        ];
+
       }
 
-      $query_params = drupal_get_query_parameters();
       foreach ($compound_info['siblings_detailed'] as $sibling) {
-        $path = 'islandora/object/' . $sibling['pid'] . '/datastream/TN/view';
-        $class = array(
+        $class = [
           'islandora-compound-object-jail',
-        );
+        ];
         if ($sibling['pid'] == $compound_info['current_pid']) {
           $class[] = 'islandora-compound-object-jail-active';
         }
-        $img = array(
-          'image' => array(
+        // XXX: In order to get the noscript tags to work, we make the image
+        // element first. There should be a cleaner way to do this.
+        $image_noscript = [
+          '#theme' => 'image',
+          '#uri' => Url::fromRoute('islandora.view_datastream_view', ['object' => $sibling['pid'], 'datastream' => 'TN'])->toString(),
+        ];
+        $rendered_image_noscript = drupal_render($image_noscript);
+
+        $img = [
+          'image' => [
             '#theme' => 'image',
-            '#path' => "$module_path/images/loader.png",
-            '#attributes' => array(
+            '#uri' => file_create_url("$module_path/images/loader.png"),
+            '#attributes' => [
               'class' => $class,
-              'data-src' => url($path),
-            ),
-            '#href' => "islandora/object/{$sibling['pid']}",
-          ),
-          'noscript' => array(
-            '#theme' => 'image',
-            '#path' => $path,
-            '#prefix' => '<noscript>',
-            '#suffix' => '</noscript>',
-          ),
-        );
-        $block[$sibling['pid']] = array(
+              'data-src' => Url::fromRoute('islandora.view_datastream_view', ['object' => $sibling['pid'], 'datastream' => 'TN'])->toString(),
+            ],
+          ],
+          'noscript' => [
+            '#type' => 'html_tag',
+            '#tag' => 'noscript',
+            '#value' => $rendered_image_noscript,
+          ],
+        ];
+        $block[$sibling['pid']] = [
           '#type' => 'container',
-          '#attributes' => array(),
-          'link' => array(
+          '#attributes' => [],
+          'link' => [
             '#type' => 'link',
             '#title' => $sibling['title'],
-            '#href' => "islandora/object/{$sibling['pid']}",
-            '#options' => array('query' => $query_params),
-          ),
-          'content' => array(
-            '#theme' => 'link',
-            '#text' => drupal_render($img),
-            '#path' => "islandora/object/{$sibling['pid']}",
-            '#options' => array(
-              'attributes' => array(),
-              'html' => TRUE,
-              'query' => $query_params,
-            ),
-          ),
-        );
+            '#url' => Url::fromRoute('islandora.view_object', ['object' => $sibling['pid']]),
+          ],
+          'content' => [
+            '#type' => 'link',
+            '#title' => drupal_render($img),
+            '#url' => Url::fromRoute('islandora.view_object', ['object' => $sibling['pid']]),
+          ],
+        ];
       }
     }
   }
@@ -119,21 +101,38 @@ function islandora_compound_object_jail_display_block() {
  */
 function islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  drupal_add_css(drupal_get_path('module', 'islandora_compound_object') . '/css/islandora_compound_object.block.css');
-  $object = $object ? $object : menu_get_object('islandora_object', 2);
+  $block = [];
+  $block['#attached']['library'] = ['islandora_compound_object/compound_navigation_css'];
+
+  $object = $object ? $object : \Drupal::routeMatch()->getParameter('object', 2);
   if ($object) {
     $output = '';
-    if ($object) {
-      $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
-      // This object is part of a compound object.
-      if (!empty($compound_info)) {
-        $prev_next = theme('islandora_compound_prev_next', $compound_info);
-        $output .= $prev_next;
-      }
+    $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
+    // This object is part of a compound object.
+    if (!empty($compound_info)) {
+      // XXX: The theme processing requires '#'s. There should be a better way.
+      $prev_next = [
+        '#theme' => 'islandora_compound_prev_next',
+        '#parent_label' => $compound_info['parent_label'],
+        '#parent_pid' => $compound_info['parent_pid'],
+        '#parent_url' => $compound_info['parent_url'],
+        '#previous_pid' => $compound_info['previous_pid'],
+        '#next_pid' => $compound_info['next_pid'],
+        '#current_pid' => $compound_info['current_pid'],
+        '#child_count' => $compound_info['child_count'],
+        '#siblings' => $compound_info['siblings'],
+        '#siblings_detailed' => $compound_info['siblings_detailed'],
+        '#pid' => $compound_info['pid'],
+        '#label' => $compound_info['label'],
+        '#sequence' => $compound_info['sequence'],
+      ];
 
-      if (!empty($output)) {
-        return array('#markup' => $output);
-      }
+      $output .= \Drupal::service('renderer')->render($prev_next);
+    }
+
+    if (!empty($output)) {
+      $block['#markup'] = $output;
+      return $block;
     }
   }
 }
