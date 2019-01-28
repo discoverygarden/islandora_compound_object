@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Batch functionality for the compound solution pack.
@@ -169,7 +170,7 @@ function islandora_compound_object_delete_children_batch_operation(AbstractObjec
  * @param array $operations
  *   Operations in the batch.
  */
-function islandora_compound_object_batch_finished($success, $results, $operations) {
+function islandora_compound_object_batch_finished($success, array $results, array $operations) {
   if ($success) {
     $deleted = \Drupal::translation()->formatPlural($results['deleted'],
       'Deleted 1 child from @compound.',
