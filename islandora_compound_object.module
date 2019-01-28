@@ -65,7 +65,7 @@ function islandora_compound_object_form_islandora_delete_object_form_alter(array
   $object = $form_state->get('object');
   if (in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $object->models)) {
     $form['description']['#markup'] = t('This will remove the compound object and all its child objects. Child objects currently shared with collections or part of other compound objects will not be deleted. This action cannot be undone.');
-    $form['#submit'] = array('islandora_compound_object_islandora_delete_object_form_delete_children_submit');
+    $form['#submit'] = ['islandora_compound_object_islandora_delete_object_form_delete_children_submit'];
   }
 }
 

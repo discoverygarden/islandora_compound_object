@@ -16,28 +16,28 @@
  *   The batch array to be passed to batch_set.
  */
 function islandora_compound_object_delete_children_batch(AbstractObject $compound, array $children) {
-  $batch = array(
+  $batch = [
     'finished' => 'islandora_compound_object_batch_finished',
     'progress_message' => t('Time elapsed: @elapsed <br/>Estimated time remaining @estimate.'),
     'error_message' => t('An error has occurred.'),
     'file' => drupal_get_path('module', 'islandora_compound_object') . '/includes/batch.inc',
-  );
-  $message_parameters = array('@compound' => $compound->label);
+  ];
+  $message_parameters = ['@compound' => $compound->label];
   $child_count = count($children);
-  $batch += array(
-    'operations' => array(
-      array(
+  $batch += [
+    'operations' => [
+      [
         'islandora_compound_object_delete_children_batch_operation',
-        array($compound, $children),
-      ),
-    ),
+        [$compound, $children],
+      ],
+    ],
     'title' => \Drupal::translation()->formatPlural($child_count,
       'Deleting 1 child from @compound ...',
       'Deleting @count children from @compound ...', $message_parameters),
     'init_message' => \Drupal::translation()->formatPlural($child_count,
       'Preparing to delete 1 child from @compound ...',
       'Preparing to delete @count children from @compound ...', $message_parameters),
-  );
+  ];
   return $batch;
 }
 
@@ -58,11 +58,11 @@ function islandora_compound_object_start_operation(AbstractObject $compound, arr
   if (!isset($context['sandbox']['progress'])) {
     $context['sandbox']['progress'] = 0;
     $context['sandbox']['total'] = count($children);
-    $context['results'] = array(
+    $context['results'] = [
       'deleted' => 0,
       'removed' => 0,
       'parent' => $compound->label,
-    );
+    ];
   }
   return $children[$context['sandbox']['progress']];
 }
@@ -174,12 +174,12 @@ function islandora_compound_object_batch_finished($success, $results, $operation
     $deleted = \Drupal::translation()->formatPlural($results['deleted'],
       'Deleted 1 child from @compound.',
       'Deleted @count children from @compound.',
-      array('@compound' => $results['parent'])
+      ['@compound' => $results['parent']]
     );
     $removed = \Drupal::translation()->formatPlural($results['removed'],
       'Removed 1 child from @compound.',
       'Removed @count children from @compound.',
-      array('@compound' => $results['parent'])
+      ['@compound' => $results['parent']]
     );
     if ($results['deleted']) {
       drupal_set_message($deleted);
@@ -191,9 +191,10 @@ function islandora_compound_object_batch_finished($success, $results, $operation
   else {
     // Generic Error Message.
     $error_operation = reset($operations);
-    $message = t('An error occurred while processing %error_operation with arguments: @arguments', array(
+    $message = t('An error occurred while processing %error_operation with arguments: @arguments', [
       '%error_operation' => $error_operation[0],
-      '@arguments' => print_r($error_operation[1], TRUE)));
+      '@arguments' => print_r($error_operation[1], TRUE),
+    ]);
     drupal_set_message($message, 'error');
   }
 }
