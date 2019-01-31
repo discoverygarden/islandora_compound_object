@@ -14,3 +14,7 @@ islandora_compound_object.count:
   route_name: islandora_compound_object.count
   title: Compound Count
   base_route: islandora.view_object
+islandora_compound_object.admin:
+  route_name: islandora_compound_object.admin
+  title: Settings
+  base_route: islandora_compound_object.admin
