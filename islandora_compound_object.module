@@ -652,3 +652,13 @@ function islandora_compound_object_library_info_alter(&$libraries, $extension) {
     $libraries['jail']['js'][file_create_url("$jail_path/dist/jail.min.js")] = [];
   }
 }
+
+/**
+ * Implements hook_islandora_solution_pack_child_relationships().
+ */
+function islandora_compound_object_islandora_solution_pack_child_relationships($cmodels) {
+  if ($cmodels === 'all' || in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $cmodels)) {
+    $predicate = \Drupal::config('islandora_compound_object.settings')->get('islandora_compound_object_relationship');
+    return ['predicate' => ["<fedora-rels-ext:$predicate>"]];
+  }
+}
