@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 const ISLANDORA_COMPOUND_OBJECT_CMODEL = 'islandora:compoundCModel';
 const ISLANDORA_COMPOUND_OBJECT_LEGACY_BACKEND = 'islandora_compound_object_legacy_sparql';
 const ISLANDORA_COMPOUND_OBJECT_SPARQL_BACKEND = 'islandora_compound_object_sparql_query_backend';
+const ISLANDORA_COMPOUND_OBJECT_SPARQL_COMPLIANT_BACKEND = 'islandora_compound_object_sparql_query_compliant_backend';
 // @codingStandardsIgnoreEnd
 
 /**
@@ -637,6 +638,11 @@ function islandora_compound_object_islandora_compound_object_query_backends() {
     ISLANDORA_COMPOUND_OBJECT_SPARQL_BACKEND => [
       'title' => t('SPARQL - Does a SPARQL query with filters. Generally faster than the default option.'),
       'callable' => 'islandora_compound_object_query_sparql',
+      'file' => "$module_path/includes/backends.inc",
+    ],
+    ISLANDORA_COMPOUND_OBJECT_SPARQL_COMPLIANT_BACKEND => [
+      'title' => t('SPARQL - Use this option for fully compliant SPARQL triple stores. Does not work with Mulgara.'),
+      'callable' => 'islandora_compound_object_query_sparql_compliant',
       'file' => "$module_path/includes/backends.inc",
     ],
   ];
