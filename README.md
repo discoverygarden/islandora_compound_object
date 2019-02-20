@@ -1,11 +1,9 @@
 ## Introduction
 
-The Islandora Compound Object Solution Pack enables generic parent-child
-relationships between objects. The object view of a compound object is replaced
-by the view of its first child object. The included "Islandora Compound Object
-Navigation" block provides a thumbnail navigation of an object's siblings. A
-"Compound" management tab allows for the addition and removal of parent and
-child objects for each object.
+The Islandora Compound Object Solution Pack enables the creation and management
+of parent-child relationships between objects, and an interface to navigate
+between children of the same object. Children have an order within their parent,
+which can be managed from the parent object.
 
 ## Requirements
 
@@ -13,46 +11,50 @@ This module requires the following modules/libraries:
 
 * [Islandora](https://github.com/discoverygarden/islandora)
 
-This module has the following as optional requirements for certain features:
+Specific features require the following modules/libraries:
 
-For Islandora Compound Object JAIL Display:
+* [Islandora Solr Search](https://github.com/discoverygarden/islandora_solr)
+Module
+    * Provides a Solr backend to retrieve children instead of using the resource
+    index
+    * Configurable ability to hide child objects from Solr search results
 
-* [JAIL](https://github.com/sebarmeli/JAIL) library 
+* [JAIL](https://github.com/sebarmeli/JAIL) JQuery library 
+    * For the JAIL Display (lazy-loading) block
 
 ## Installation
 
 Install as
 [usual](https://www.drupal.org/docs/8/extending-drupal-8/installing-drupal-8-modules).
 
-If utilizing the lazy loading image ability of the solution pack, the
-[JAIL](https://github.com/sebarmeli/JAIL)
+If using the JAIL display, the [JAIL](https://github.com/sebarmeli/JAIL)
 library must be present within sites/all/libraries/JAIL.
+
+## Usage
+
+This module provides a "Compound CModel". Objects of this type are shells to
+hold children. They have no content of their own, and the object page at a
+Compound CModel object displays the content and metadata of its first child.
+This module can be configured to allow other objects to have children, in
+which case, the parent object appears as usual, and the navigation block
+displays the parent followed by its children.
+
+Compound relationships are managed through the __Manage » Compound__ tab which
+appears on all objects.
+
+Navigation between objects linked by a Compound relationship requires a block to
+be placed on the interface in __Structure » Blocks__. This module provides two
+options: a standard Islandora Compound Object Navigation block, and the
+Islandora Compound JAIL Display, which uses a javascript library for
+lazy-loading (improving performance on compound objects with many children).
 
 ## Configuration
 
-Set the 'Child relationship predicate' and 'Solr filter query', as well as
-select options in Configuration > Islandora > Solution pack configuration >
-Compound Object Solution Pack (admin/config/islandora/solution_pack_config/
-compound_object).
-
-Optionally, enable the JAIL compound block to utilize the lazy loading image
-ability as outlined below.
+Options for this module can be set at Configuration > Islandora > Solution pack
+configuration > Compound Object Solution Pack
+(admin/config/islandora/solution_pack_config/compound_object).
 
 ![Configuration](https://user-images.githubusercontent.com/25011926/39889778-d1a91aca-5466-11e8-8eb1-1978cac81104.png)
-
-### Block:
-
-There exist two block options for displaying compound objects within Islandora.
-The default "Islandora Compound Object Navigation" block will provide navigation
-controls and loading of all objects related to the parent compound. The latter
-option is a block utilizing the [JAIL](https://github.com/sebarmeli/JAIL)
-library which allows for lazy loading of images. This allows the block to load
-images only when they are being accessed which will greatly increase performance
-on compounds with many children.
-
-![compobjblocks_to_configure01b](https://cloud.githubusercontent.com/assets/11573234/24410256/9e01dfc0-13a0-11e7-9edf-454addc13128.JPG)
-
-
 
 ### Theme:
 
