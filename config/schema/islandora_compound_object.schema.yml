@@ -1,5 +1,5 @@
 islandora_compound_object.settings:
-  type: mapping
+  type: config_object
   label: Settings
   mapping:
     islandora_compound_object_compound_children:
