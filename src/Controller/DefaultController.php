@@ -4,9 +4,11 @@ namespace Drupal\islandora_compound_object\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Cache\CacheableJsonResponse as JsonResponse;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+
+use Drupal\islandora\Controller\DefaultController as IslandoraController;
 
 /**
  * Default controller for the islandora_compound_object module.
@@ -84,7 +86,20 @@ EOQ;
         ]),
       ];
     }
-    return new JsonResponse($matches);
+
+    $response = new JsonResponse($matches);
+
+    $response->getCacheableMetadata()
+      ->addCacheableDependency($islandora_tuque->repository)
+      ->addCacheableDependency($config)
+      ->addCacheContexts([
+        'url.query_args:q',
+      ])
+      ->addCacheTags([
+        IslandoraController::LISTING_TAG,
+      ]);
+
+    return $response;
   }
 
   /**
@@ -93,7 +108,16 @@ EOQ;
   public static function islandoraCompoundObjectTaskAccess($object, AccountInterface $account) {
     $object = islandora_object_load($object);
     $perm = islandora_compound_object_task_access($object);
-    return ($perm && \Drupal::routeMatch()->getRouteName() == 'islandora.view_object') ? AccessResult::allowed() : AccessResult::forbidden();
+    return AccessResult::allowedIf($perm)
+      ->andIf(
+        AccessResult::allowedIf(\Drupal::routeMatch()->getRouteName() == 'islandora.view_object')
+          ->addCacheContexts([
+            'route',
+          ])
+      )
+      ->addCacheableDependency($object)
+      ->addCacheableDependency(\Drupal::config('islandora_compound_object.settings'))
+      ->cachePerPermissions();
   }
 
   /**
@@ -102,7 +126,9 @@ EOQ;
   public static function islandoraCompoundObjectAccess($object) {
     $object = islandora_object_load($object);
     $perm = islandora_compound_object_access($object);
-    return $perm ? AccessResult::allowed() : AccessResult::forbidden();
+    return AccessResult::allowedIf($perm)
+      ->addCacheableDependency($object)
+      ->cachePerPermissions();
   }
 
 }
