@@ -6,6 +6,9 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\Core\Cache\CacheableMetadata;
+
+use Drupal\islandora\Controller\DefaultController as IslandoraController;
 
 /**
  * Constructs the JAIL display block for a compound.
@@ -15,13 +18,23 @@ use Drupal\Core\Url;
  */
 function islandora_compound_object_jail_display_block() {
   $block = [];
+
   $object = \Drupal::routeMatch()->getParameter('object', 2);
+
+  $cache_meta = CacheableMetadata::createFromRenderArray($block)
+    ->addCacheContexts([
+      'url',
+    ])
+    ->addCacheableDependency($object)
+    ->addCacheTags([
+      IslandoraController::LISTING_TAG,
+    ]);
+
   if ($object) {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     if (!empty($compound_info)) {
       $module_path = drupal_get_path('module', 'islandora_compound_object');
-      $block['#attached']['library'] = ['islandora_compound_object/jail'];
-      $block['#attached']['library'] = ['islandora_compound_object/compound_jail'];
+      $block['#attached']['library'][] = 'islandora_compound_object/compound_jail';
       $block['#attached']['drupalSettings']['islandora_compound_object']['image_path'] = file_create_url(drupal_get_path('module', 'islandora') . '/images/folder.png');
       $block['part_title'] = [
         '#type' => 'item',
@@ -35,7 +48,9 @@ function islandora_compound_object_jail_display_block() {
       if ($compound_info['parent_url']) {
         $block['manage_link'] = [
           '#type' => 'item',
-          '#markup' => '<a href=' . $manage_link . '>' . t('manage parent') . '</a>',
+          '#markup' => t('<a href="@href">manage parent</a>', [
+            '@href' => $manage_link,
+          ]),
         ];
 
       }
@@ -87,6 +102,9 @@ function islandora_compound_object_jail_display_block() {
       }
     }
   }
+
+  $cache_meta->applyTo($block);
+
   return $block;
 }
 
@@ -100,18 +118,44 @@ function islandora_compound_object_jail_display_block() {
  *   Renderable array for the block.
  */
 function islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
+  $block = _islandora_compound_object_navigation_block($object);
+
+  if (isset($block['prev_next'])) {
+    return ['#markup' => \Drupal::service('renderer')->render($block)];
+  }
+
+}
+
+/**
+ * Constructs the default navigation block for a compound.
+ *
+ * @param AbstractObject $object
+ *   If supplied the object to create the block for.
+ *
+ * @return array
+ *   Renderable array for the block.
+ */
+function _islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   $block = [];
-  $block['#attached']['library'] = ['islandora_compound_object/compound_navigation_css'];
+
+  $cache_meta = CacheableMetadata::createFromRenderArray($block)
+    ->addCacheContexts([
+      'url',
+    ])
+    ->addCacheableDependency($object)
+    ->addCacheTags([
+      IslandoraController::LISTING_TAG,
+    ]);
 
   $object = $object ? $object : \Drupal::routeMatch()->getParameter('object', 2);
   if ($object) {
-    $output = '';
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
     // This object is part of a compound object.
     if (!empty($compound_info)) {
+      $block['#attached']['library'][] = 'islandora_compound_object/compound_navigation_css';
       // XXX: The theme processing requires '#'s. There should be a better way.
-      $prev_next = [
+      $block['prev_next'] = [
         '#theme' => 'islandora_compound_prev_next',
         '#parent_label' => $compound_info['parent_label'],
         '#parent_pid' => $compound_info['parent_pid'],
@@ -127,12 +171,11 @@ function islandora_compound_object_navigation_block(AbstractObject $object = NUL
         '#sequence' => $compound_info['sequence'],
       ];
 
-      $output .= \Drupal::service('renderer')->render($prev_next);
     }
 
-    if (!empty($output)) {
-      $block['#markup'] = $output;
-      return $block;
-    }
   }
+
+  $cache_meta->applyTo($block);
+
+  return $block;
 }
