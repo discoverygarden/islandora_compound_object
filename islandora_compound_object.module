@@ -654,8 +654,8 @@ function islandora_compound_object_islandora_compound_object_query_backends() {
 function islandora_compound_object_library_info_alter(&$libraries, $extension) {
   if ($extension === 'islandora_compound_object') {
     $jail_path = libraries_get_path('JAIL');
-    $libraries['jail']['js'][file_create_url("$jail_path/lib/jquery.js")] = [];
-    $libraries['jail']['js'][file_create_url("$jail_path/dist/jail.min.js")] = [];
+    $libraries['jail']['js'][Url::fromUri("base:$jail_path/lib/jquery.js")->toString()] = [];
+    $libraries['jail']['js'][Url::fromUri("base:$jail_path/dist/jail.min.js")->toString()] = [];
   }
 }
 
