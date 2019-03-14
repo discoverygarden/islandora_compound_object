@@ -17,11 +17,9 @@ use Drupal\islandora\Controller\DefaultController as IslandoraController;
  *   Renderable array for the block.
  */
 function islandora_compound_object_jail_display_block() {
-  $block = [];
-
   $object = \Drupal::routeMatch()->getParameter('object', 2);
 
-  $cache_meta = CacheableMetadata::createFromRenderArray($block)
+  $cache_meta = (new CacheableMetadata())
     ->addCacheContexts([
       'url',
     ])
@@ -32,7 +30,18 @@ function islandora_compound_object_jail_display_block() {
 
   if ($object) {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
+
+    $cache_meta
+      // XXX: Results from islandora_compound_object_retrieve_compound_info()
+      // take our config object into effect... let's add it as a dependency.
+      ->addCacheableDependency(\Drupal::config('islandora_compound_object.settings'))
+      // XXX: They also vary based on a handful of management permissions...
+      ->addCacheContexts([
+        'user.permissions',
+      ]);
+
     if (!empty($compound_info)) {
+      $block = [];
       $module_path = drupal_get_path('module', 'islandora_compound_object');
       $block['#attached']['library'][] = 'islandora_compound_object/compound_jail';
       $block['#attached']['drupalSettings']['islandora_compound_object']['image_path'] = file_create_url(drupal_get_path('module', 'islandora') . '/images/folder.png');
@@ -68,7 +77,6 @@ function islandora_compound_object_jail_display_block() {
           '#theme' => 'image',
           '#uri' => Url::fromRoute('islandora.view_datastream_view', ['object' => $sibling['pid'], 'datastream' => 'TN'])->toString(),
         ];
-        $rendered_image_noscript = drupal_render($image_noscript);
 
         $img = [
           'image' => [
@@ -82,7 +90,7 @@ function islandora_compound_object_jail_display_block() {
           'noscript' => [
             '#type' => 'html_tag',
             '#tag' => 'noscript',
-            '#value' => $rendered_image_noscript,
+            'image' => $image_noscript,
           ],
         ];
         $block[$sibling['pid']] = [
@@ -101,6 +109,10 @@ function islandora_compound_object_jail_display_block() {
         ];
       }
     }
+  }
+
+  if (!isset($block)) {
+    $block = [];
   }
 
   $cache_meta->applyTo($block);
@@ -137,9 +149,10 @@ function islandora_compound_object_navigation_block(AbstractObject $object = NUL
  */
 function _islandora_compound_object_navigation_block(AbstractObject $object = NULL) {
   module_load_include('inc', 'islandora', 'includes/utilities');
-  $block = [];
 
-  $cache_meta = CacheableMetadata::createFromRenderArray($block)
+  $object = $object ? $object : \Drupal::routeMatch()->getParameter('object', 2);
+
+  $cache_meta = (new CacheableMetadata())
     ->addCacheContexts([
       'url',
     ])
@@ -148,11 +161,21 @@ function _islandora_compound_object_navigation_block(AbstractObject $object = NU
       IslandoraController::LISTING_TAG,
     ]);
 
-  $object = $object ? $object : \Drupal::routeMatch()->getParameter('object', 2);
   if ($object) {
     $compound_info = islandora_compound_object_retrieve_compound_info($object, TRUE);
+
+    $cache_meta
+      // XXX: Results from islandora_compound_object_retrieve_compound_info()
+      // take our config object into effect... let's add it as a dependency.
+      ->addCacheableDependency(\Drupal::config('islandora_compound_object.settings'))
+      // XXX: They also vary based on a handful of management permissions...
+      ->addCacheContexts([
+        'user.permissions',
+      ]);
+
     // This object is part of a compound object.
     if (!empty($compound_info)) {
+      $block = [];
       $block['#attached']['library'][] = 'islandora_compound_object/compound_navigation_css';
       // XXX: The theme processing requires '#'s. There should be a better way.
       $block['prev_next'] = [
@@ -172,7 +195,10 @@ function _islandora_compound_object_navigation_block(AbstractObject $object = NU
       ];
 
     }
+  }
 
+  if (!isset($block)) {
+    $block = [];
   }
 
   $cache_meta->applyTo($block);
