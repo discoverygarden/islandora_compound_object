@@ -1,6 +1,8 @@
 jail:
   version: 1.x
   js: {}
+  dependencies:
+    - core/jquery
 compound_jail:
   version: 1.x
   js:

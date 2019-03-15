@@ -46,22 +46,15 @@ class JailDisplay extends BlockBase implements ContainerFactoryPluginInterface {
    */
   public function build() {
     module_load_include('inc', 'islandora_compound_object', 'includes/blocks');
-    $nav = islandora_compound_object_jail_display_block();
-    if ($nav) {
-      return $nav;
-    }
+    return islandora_compound_object_jail_display_block();
   }
 
   /**
    * {@inheritdoc}
    */
   public function blockAccess(AccountInterface $account) {
-    if ($this->config->get('islandora_compound_object_use_jail_view')) {
-      return AccessResult::allowed();
-    }
-    else {
-      return AccessResult::forbidden();
-    }
+    return AccessResult::allowedIf($this->config->get('islandora_compound_object_use_jail_view'))
+      ->addCacheableDependency($this->config);
   }
 
 }
