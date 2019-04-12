@@ -155,6 +155,7 @@ function islandora_compound_object_xml_form_builder_forms() {
 function islandora_compound_object_xml_form_builder_form_associations() {
   return [
     'islandora_compound_mods_form' => [
+      'self_transform' => 'islandora_cleanup_mods_extended.xsl',
       'content_model' => ISLANDORA_COMPOUND_OBJECT_CMODEL,
       'form_name' => 'Compound Object MODS form',
       'dsid' => 'MODS',
