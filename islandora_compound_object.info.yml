@@ -6,4 +6,4 @@ package: 'Islandora Solution Packs'
 configure: islandora_compound_object.admin
 core: 8.x
 type: module
-php: '5.5.9'
+php: '7.2'
