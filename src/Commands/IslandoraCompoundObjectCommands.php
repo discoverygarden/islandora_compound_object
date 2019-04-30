@@ -4,6 +4,8 @@ namespace Drupal\islandora_compound_object\Commands;
 
 use Drush\Commands\DrushCommands;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
  * A Drush commandfile.
@@ -18,6 +20,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
  */
 class IslandoraCompoundObjectCommands extends DrushCommands {
 
+  use DependencySerializationTrait;
+
   const OLD_PRED = 'isPartOf';
   const NEW_PRED = 'isConstituentOf';
 
@@ -29,10 +33,18 @@ class IslandoraCompoundObjectCommands extends DrushCommands {
   protected $configFactory;
 
   /**
+   * Logger factory.
+   *
+   * @var Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $loggerFactory;
+
+  /**
    * Constructor.
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
     $this->configFactory = $config_factory;
+    $this->loggerFactory = $logger_factory;
   }
 
   /**
@@ -92,7 +104,7 @@ EOQ;
     // Construct the batch array for processing.
     $batch = [
       'operations' => $operations,
-      'title' => $this->t('Rels predicate update batch'),
+      'title' => dt('Rels predicate update batch'),
       'finished' => [$this, 'finished'],
       'file' => drupal_get_path('module', 'islandora_compound_object') . '/includes/islandora_compound_object.drush.inc',
     ];
@@ -189,7 +201,7 @@ EOQ;
       ->getEditable('islandora_compound_object.settings')
       ->set('islandora_compound_object_relationship', static::NEW_PRED)
       ->save();
-    $this->output()->writeln('Finished updating compound object relationship predicate(s).');
+    $this->loggerFactory->get('islandora_compound_object')->info('Finished updating compound object relationship predicate(s).');
   }
 
 }

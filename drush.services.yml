@@ -5,3 +5,4 @@ services:
       - { name: drush.command }
     arguments:
       - '@config.factory'
+      - '@logger.factory'
