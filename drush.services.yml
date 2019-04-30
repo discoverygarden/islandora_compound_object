@@ -3,3 +3,5 @@ services:
     class: \Drupal\islandora_compound_object\Commands\IslandoraCompoundObjectCommands
     tags:
       - { name: drush.command }
+    arguments:
+      - '@config.factory'

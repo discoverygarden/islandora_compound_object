@@ -3,6 +3,7 @@
 namespace Drupal\islandora_compound_object\Commands;
 
 use Drush\Commands\DrushCommands;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * A Drush commandfile.
@@ -21,7 +22,21 @@ class IslandoraCompoundObjectCommands extends DrushCommands {
   const NEW_PRED = 'isConstituentOf';
 
   /**
-   * Update relationship predicate on compound object children from isPartOf to isConstituentOf
+   * Configuration factory.
+   *
+   * @var Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * Constructor.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    $this->configFactory = $config_factory;
+  }
+
+  /**
+   * Update relationship predicate on compound object children predicates.
    *
    * @command islandora_compound_object:update-rels-predicate
    * @aliases update_rels_predicate
@@ -51,22 +66,34 @@ EOQ;
     $operations = [];
     foreach ($results as $compound_object) {
       array_push($operations, [
-        [get_class($this), 'setNewPredicate'],
-        [$compound_object['object']['value'], 'Setting child relationship(s) predicate from compound object: '],
+        [
+          get_class($this),
+          'setNewPredicate',
+        ],
+        [
+          $compound_object['object']['value'],
+          'Setting child relationship(s) predicate from compound object: ',
+        ],
       ]);
       // Now set up the operation to set the new predicate. In this case,
       // fedora:isConstituentOf.
-      array_push($operations,
-        [get_class($this), 'deleteOldPredicate'],
-        [$compound_object['object']['value'], 'Deleting old child relationship(s) predicate from compound object: '],
+      array_push($operations, [
+        [
+          get_class($this),
+          'deleteOldPredicate',
+        ],
+        [
+          $compound_object['object']['value'],
+          'Deleting old child relationship(s) predicate from compound object: ',
+        ],
       ]);
     }
 
     // Construct the batch array for processing.
     $batch = [
       'operations' => $operations,
-      'title' => t('Rels predicate update batch'),
-      'finished' => array($this, 'finished'),
+      'title' => $this->t('Rels predicate update batch'),
+      'finished' => [$this, 'finished'],
       'file' => drupal_get_path('module', 'islandora_compound_object') . '/includes/islandora_compound_object.drush.inc',
     ];
 
@@ -158,10 +185,11 @@ EOQ;
    */
   public function finished($success, array $results, array $operations) {
     // Print finished message to user.
-    \Drupal::configFactory()
+    $this->configFactory
       ->getEditable('islandora_compound_object.settings')
       ->set('islandora_compound_object_relationship', static::NEW_PRED)
       ->save();
     $this->output()->writeln('Finished updating compound object relationship predicate(s).');
   }
+
 }
