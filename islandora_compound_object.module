@@ -574,7 +574,7 @@ function islandora_compound_object_retrieve_compound_info(AbstractObject $object
     $next_pid = (isset($siblings[$current_key + 1])) ? $siblings[$current_key + 1] : '';
 
     // Check if perms to show link for parent manage.
-    if (islandora_object_manage_access_callback([
+    if ($parent && islandora_object_manage_access_callback([
       ISLANDORA_METADATA_EDIT,
       ISLANDORA_MANAGE_PROPERTIES,
       ISLANDORA_ADD_DS,
@@ -586,7 +586,7 @@ function islandora_compound_object_retrieve_compound_info(AbstractObject $object
     }
 
     $info = [
-      'parent_label' => $parent->label,
+      'parent_label' => ($parent && $parent->label) ? $parent->label : NULL,
       'parent_pid' => $parent_pid,
       'parent_url' => $parent_url,
       'previous_pid' => $previous_pid,
