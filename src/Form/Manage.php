@@ -220,7 +220,7 @@ class Manage extends FormBase {
       else {
         if ($config->get('islandora_compound_object_compound_children')) {
           if (!in_array(ISLANDORA_COMPOUND_OBJECT_CMODEL, $parent_object->models)) {
-            $form_state->setErrorByName('parent', $this->t('The parent object (@pid) is not a compound object!', ['@pid' => $form_state['values']['parent']]));
+            $form_state->setErrorByName('parent', $this->t('The parent object (@pid) is not a compound object!', ['@pid' => $form_state->getValue('parent')]));
           }
         }
         // Do not allow parent of self.
