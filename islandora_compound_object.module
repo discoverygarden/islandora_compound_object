@@ -668,3 +668,42 @@ function islandora_compound_object_islandora_solution_pack_child_relationships($
     return ['predicate' => ["<fedora-rels-ext:$predicate>"]];
   }
 }
+
+/**
+ * Implements hook_help().
+ */
+function islandora_compound_object_help($route) {
+  switch ($route) {
+    // Main help page for the module.
+    case 'help.page.islandora_compound_object':
+      // About section.
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t(
+        'The Islandora Compound Object module allows for parent-child relations
+        between objects.
+        See the <a href=":wiki">Islandora Compound Solution Pack wiki*</a>
+        for more information.', [
+          ':wiki' => 'https://wiki.duraspace.org/display/ISLANDORA/Compound+Solution+Pack',
+        ]
+      ) .
+      '</p>';
+      // Uses section.
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dt>' . t('Manage Compound Relations') . '</dt><dd>' . t(
+        'See the <a href=":usage">Usage section of the wiki*</a> for details.', [
+          ':usage' => 'https://wiki.duraspace.org/display/ISLANDORA/Compound+Solution+Pack#CompoundSolutionPack-Usage',
+        ]
+      ) .
+      '</dd>';
+
+      $output .= '</br></br><p>' .
+        '*Links go to documentation for the Drupal 7 version of the module, as
+        documentation for the Drupal 8 version of the module has not yet been
+        written. There may be some small discrepencies; however, most key points
+        remain useful.' .
+      '</p>';
+      return $output;
+
+    // Other cases can be added for various admin pages.
+  }
+}
