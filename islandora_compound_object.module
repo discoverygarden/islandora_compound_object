@@ -694,7 +694,5 @@ function islandora_compound_object_help($route) {
       $output .= t('*Links go to documentation for the Drupal 7 version of the module, as documentation for the Drupal 8 version of the module has not yet been written. There may be some small discrepencies; however, most key points remain useful.') .
       '</p>';
       return $output;
-
-    // Other cases can be added for various admin pages.
   }
 }
