@@ -36,7 +36,7 @@ class Manage extends FormBase {
       $form['add_children'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Add Child Objects'),
-        '#description' => $this->t('Add child objects as part of this compound object'),
+        '#description' => $this->t('Add child objects as part of this compound object.'),
       ];
       $form['add_children']['child'] = [
         '#type' => 'textfield',
@@ -51,7 +51,7 @@ class Manage extends FormBase {
         $form['children'] = [
           '#type' => 'details',
           '#title' => $this->t('Remove Child Objects'),
-          '#description' => $this->t('Remove child objects of as part of this compound object'),
+          '#description' => $this->t('Remove child objects of as part of this compound object.'),
           '#open' => FALSE,
         ];
 
@@ -74,7 +74,7 @@ class Manage extends FormBase {
     $form['add_to_parent'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Associate with Parent Object'),
-      '#description' => $this->t('Add this object to a parent object'),
+      '#description' => $this->t('Add this object to a parent object.'),
     ];
     $form['add_to_parent']['parent'] = [
       '#type' => 'textfield',
